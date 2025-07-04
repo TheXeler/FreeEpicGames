@@ -1,0 +1,12 @@
+{
+  "type": "freeepicgames:raid_dim",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [],
+      "biome": "plains",
+      "lakes": false,
+      "features": false
+    }
+  }
+}

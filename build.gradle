@@ -1,0 +1,166 @@
+import proguard.gradle.ProGuardTask
+
+buildscript {
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.guardsquare:proguard-gradle:7.7.0'
+        classpath 'org.parchmentmc:librarian:1.+'
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.96'
+    id 'com.gradleup.shadow' version '8.3.0'
+}
+
+group = mod_group_id
+version = minecraft_version + "-" + mod_version
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            data()
+
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven {
+        name = 'Curse Maven'
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        name = "Sona Type"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "Code MC"
+        url = "https://repo.codemc.io/repository/maven-public/"
+    }
+}
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    shade 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
+    shade 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
+
+    implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
+    implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    implementation 'com.mojang:brigadier:1.0.18'
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [minecraft_version      : minecraft_version,
+                             minecraft_version_range: minecraft_version_range,
+                             neo_version            : neo_version,
+                             neo_version_range      : neo_version_range,
+                             loader_version_range   : loader_version_range,
+                             mod_id                 : mod_id,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : mod_version,
+                             mod_authors            : mod_authors,
+                             mod_description        : mod_description]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+shadowJar {
+    archiveClassifier = 'shadowed'
+    configurations = [project.configurations.shade]
+    relocate 'io.github.revxrsal.lamp.common', "${project.group}.relocated.lamp.9common"
+    relocate 'io.github.revxrsal.lamp.brigadier', "${project.group}.relocated.lamp.brigadier"
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+assemble.dependsOn "shadowJar"
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
