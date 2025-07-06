@@ -7,21 +7,21 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.thexeler.freeepicgames.database.view.NPCView;
+import org.thexeler.freeepicgames.database.view.NpcView;
 
 public abstract class NpcEvent extends Event {
     @Getter
     Entity entity;
     @Getter
-    private final NPCView view;
+    private final NpcView view;
 
-    public NpcEvent(NPCView npc) {
+    public NpcEvent(NpcView npc) {
         this.entity = npc.getOriginEntity();
         this.view = npc;
     }
 
     public static class CreateEvent extends NpcEvent {
-        public CreateEvent(NPCView npc) {
+        public CreateEvent(NpcView npc) {
             super(npc);
         }
     }
@@ -30,7 +30,7 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final ServerLevel level;
 
-        public JoinEvent(NPCView npc, ServerLevel level) {
+        public JoinEvent(NpcView npc, ServerLevel level) {
             super(npc);
             this.level = level;
         }
@@ -41,7 +41,7 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final DamageSource source;
 
-        public DeathEvent(NPCView npc, DamageSource source) {
+        public DeathEvent(NpcView npc, DamageSource source) {
             super(npc);
             this.source = source;
         }
@@ -51,7 +51,7 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final Player player;
 
-        public InteractEvent(NPCView npc, Player player) {
+        public InteractEvent(NpcView npc, Player player) {
             super(npc);
             this.player = player;
         }
@@ -63,7 +63,7 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final float amount;
 
-        public DamageEvent(NPCView npc, DamageSource source, float amount) {
+        public DamageEvent(NpcView npc, DamageSource source, float amount) {
             super(npc);
             this.source = source;
             this.amount = amount;
@@ -71,7 +71,7 @@ public abstract class NpcEvent extends Event {
     }
 
     public static class TickEvent extends NpcEvent {
-        public TickEvent(NPCView npc) {
+        public TickEvent(NpcView npc) {
             super(npc);
         }
     }

@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class NPC<T extends Entity> {
+public class NpcEntity<T extends Entity> {
 
-    public static final Map<UUID, NPC<?>> entities = new HashMap<>();
+    public static final Map<UUID, NpcEntity<?>> entities = new HashMap<>();
     @Getter
-    private final NPCType entityType;
+    private final NpcType entityType;
     @Getter
     private final T originEntity;
 
-    public NPC(NPCType type, T origin) {
+    public NpcEntity(NpcType type, T origin) {
         entities.put(origin.getUUID(), this);
         entityType = type;
         originEntity = origin;
@@ -35,11 +35,11 @@ public class NPC<T extends Entity> {
         entities.remove(uuid);
     }
 
-    public static @Nullable NPC<?> getEntity(Entity entity) {
+    public static @Nullable NpcEntity<?> getEntity(Entity entity) {
         return getEntity(entity.getUUID());
     }
 
-    public static @Nullable NPC<?> getEntity(UUID uuid) {
+    public static @Nullable NpcEntity<?> getEntity(UUID uuid) {
         return entities.get(uuid);
     }
 }

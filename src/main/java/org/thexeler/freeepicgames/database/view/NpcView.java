@@ -6,26 +6,26 @@ import lombok.Getter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import org.thexeler.freeepicgames.database.agent.WorldNPCDataAgent;
-import org.thexeler.freeepicgames.database.type.NPCType;
+import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
+import org.thexeler.freeepicgames.database.type.NpcType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class NPCView implements AbstractView {
-    private final WorldNPCDataAgent rootAgent;
+public class NpcView implements AbstractView {
+    private final WorldNpcDataAgent rootAgent;
 
     @Getter
     private final String id;
     @Getter
-    private final NPCType entityType;
+    private final NpcType entityType;
     @Getter
     private final Entity originEntity;
     @Getter
     private final HashMap<String, String> npcData;
 
-    public NPCView(@NotNull Entity origin, NPCType type, WorldNPCDataAgent agent) {
+    public NpcView(@NotNull Entity origin, NpcType type, WorldNpcDataAgent agent) {
         this.rootAgent = agent;
         this.originEntity = origin;
         this.id = origin.getStringUUID();
@@ -34,11 +34,11 @@ public class NPCView implements AbstractView {
         this.npcData = new HashMap<>();
     }
 
-    public NPCView(JsonObject object, WorldNPCDataAgent agent) {
+    public NpcView(JsonObject object, WorldNpcDataAgent agent) {
         this.rootAgent = agent;
 
         this.id = DataUtils.getValue(object, "id", "");
-        this.entityType = NPCType.getType(DataUtils.getValue(object, "type", ""));
+        this.entityType = NpcType.getType(DataUtils.getValue(object, "type", ""));
         this.originEntity = agent.getWorld().getEntity(UUID.fromString(id));
 
         this.npcData = new HashMap<>();
@@ -55,19 +55,19 @@ public class NPCView implements AbstractView {
         rootAgent.deleteNPC(id);
     }
 
-    public static NPCView getEntity(@NotNull Entity entity) {
+    public static NpcView getEntity(@NotNull Entity entity) {
         if (entity.level() instanceof ServerLevel level) {
             return getEntity(level, entity.getStringUUID());
         }
         return null;
     }
 
-    public static NPCView getEntity(ServerLevel level, UUID uuid) {
+    public static NpcView getEntity(ServerLevel level, UUID uuid) {
         return getEntity(level, uuid.toString());
     }
 
-    public static NPCView getEntity(ServerLevel level, String id) {
-        return WorldNPCDataAgent.getInstance(level).getNPCView(id);
+    public static NpcView getEntity(ServerLevel level, String id) {
+        return WorldNpcDataAgent.getInstance(level).getNPCView(id);
     }
 
     @Override

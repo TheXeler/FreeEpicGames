@@ -10,7 +10,7 @@ import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.FreeEpicGamesKeys;
 import org.thexeler.freeepicgames.database.type.JobType;
-import org.thexeler.freeepicgames.database.type.NPCType;
+import org.thexeler.freeepicgames.database.type.NpcType;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.type.RaidType;
 import org.thexeler.freeepicgames.database.untils.ModSavedData;
@@ -25,7 +25,7 @@ public class InitEventHandler {
         if (FreeEpicGamesConfigs.isEnabledJob) {
             JobType.init();
         }
-        NPCType.init();
+        NpcType.init();
         if (FreeEpicGamesConfigs.isEnabledRaid) {
             RaidTreasureType.init();
             RaidType.init();
@@ -42,7 +42,7 @@ public class InitEventHandler {
         if (FreeEpicGamesConfigs.isEnabledJob) {
             JobType.expire();
         }
-        NPCType.expire();
+        NpcType.expire();
         if (FreeEpicGamesConfigs.isEnabledRaid) {
             RaidTreasureType.expire();
             RaidType.expire();

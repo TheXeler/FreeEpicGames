@@ -7,9 +7,9 @@ import org.thexeler.freeepicgames.command.lamp.annotations.RequiresOP;
 import org.thexeler.freeepicgames.command.lamp.annotations.WithNPC;
 import org.thexeler.freeepicgames.command.lamp.annotations.WithNPCType;
 import org.thexeler.freeepicgames.command.lamp.parameters.EntitySelectorList;
-import org.thexeler.freeepicgames.database.agent.WorldNPCDataAgent;
-import org.thexeler.freeepicgames.database.type.NPCType;
-import org.thexeler.freeepicgames.database.view.NPCView;
+import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
+import org.thexeler.freeepicgames.database.type.NpcType;
+import org.thexeler.freeepicgames.database.view.NpcView;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
@@ -21,8 +21,8 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("create <type>")
     public void create(ForgeCommandActor sender, @WithNPCType String type) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        if (agent.createNPC(NPCType.getType(type)) != null) {
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
+        if (agent.createNPC(NpcType.getType(type)) != null) {
             sender.reply("成功创建NPC");
         }
     }
@@ -31,9 +31,9 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("create <type> <selector>")
     public void create(ForgeCommandActor sender, @WithNPCType String type, EntitySelectorList<Entity> selector) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
         selector.forEach(entity -> {
-            if (agent.createNPC(NPCType.getType(type), entity) != null) {
+            if (agent.createNPC(NpcType.getType(type), entity) != null) {
                 sender.reply("成功附加NPC功能到已有生物");
             } else {
                 sender.reply("附加失败");
@@ -45,7 +45,7 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("delete <id>")
     public void delete(ForgeCommandActor sender, String id) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
         if (agent.deleteNPC(id)) {
             sender.reply("成功删除NPC");
         } else {
@@ -57,7 +57,7 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("delete <selector>")
     public void delete(ForgeCommandActor sender, EntitySelectorList<Entity> selector) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
         selector.forEach(entity -> {
             if (agent.deleteNPC(entity.getStringUUID())) {
                 sender.reply("成功删除NPC");
@@ -71,8 +71,8 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("discard <id>")
     public void discard(ForgeCommandActor sender, @WithNPC String id) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        NPCView npc = agent.getNPCView(id);
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
+        NpcView npc = agent.getNPCView(id);
         if (npc != null) {
             npc.discard();
             sender.reply("成功删除NPC附加数据");
@@ -85,9 +85,9 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("discard <selector>")
     public void discard(ForgeCommandActor sender, EntitySelectorList<Entity> selector) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
         selector.forEach(entity -> {
-            NPCView npc = agent.getNPCView(entity.getStringUUID());
+            NpcView npc = agent.getNPCView(entity.getStringUUID());
             if (npc != null) {
                 npc.discard();
                 sender.reply("成功删除NPC附加数据");
@@ -101,7 +101,7 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("list")
     public void list(ForgeCommandActor sender) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
         sender.reply("当前世界NPC列表:");
         agent.getAllNPC().forEach(npc -> sender.reply(npc.getId()));
     }
@@ -110,8 +110,8 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("info <id>")
     public void info(ForgeCommandActor sender, String id) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        NPCView npc = agent.getNPCView(id);
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
+        NpcView npc = agent.getNPCView(id);
         if (npc != null) {
             sender.reply("NPC信息:");
             sender.reply("实体: " + npc.getEntityType().getEntityType().toString());
@@ -128,8 +128,8 @@ public class ModelNpcCommand {
     @RequiresOP
     @Subcommand("config <id>")
     public void config(ForgeCommandActor sender, String id) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        NPCView npc = agent.getNPCView(id);
+        WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(sender.getLevel());
+        NpcView npc = agent.getNPCView(id);
         if (npc != null) {
             // TODO
             FreeEpicGames.LOGGER.warn("没做完喵，诶嘿~");
@@ -147,8 +147,8 @@ public class ModelNpcCommand {
     @Subcommand("reload")
     public void reload(ForgeCommandActor sender) {
         sender.reply("正在重载配置文件...");
-        NPCType.expire();
-        NPCType.init();
+        NpcType.expire();
+        NpcType.init();
         sender.reply("配置文件重载完成");
     }
 }

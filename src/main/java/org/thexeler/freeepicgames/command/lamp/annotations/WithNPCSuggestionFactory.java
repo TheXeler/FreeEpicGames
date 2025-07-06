@@ -3,9 +3,8 @@ package org.thexeler.freeepicgames.command.lamp.annotations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
-import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
-import org.thexeler.freeepicgames.database.agent.WorldNPCDataAgent;
-import org.thexeler.freeepicgames.database.view.NPCView;
+import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
+import org.thexeler.freeepicgames.database.view.NpcView;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.autocomplete.SuggestionProvider;
@@ -21,8 +20,8 @@ public enum WithNPCSuggestionFactory implements SuggestionProvider.Factory<Forge
             return null;
         }
         return context -> {
-            WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(context.actor().getLevel());
-            return agent.getAllNPC().stream().map(NPCView::getId).toList();
+            WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(context.actor().getLevel());
+            return agent.getAllNPC().stream().map(NpcView::getId).toList();
         };
     }
 }
