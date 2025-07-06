@@ -20,7 +20,6 @@ public class FreeEpicGames {
     public static ServerLevel OVER_WORLD = null;
 
     public FreeEpicGames() {
-        MinecraftForge.EVENT_BUS.register(this);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FreeEpicGamesConfigs.SPEC);
     }
 }
