@@ -80,4 +80,4 @@
 
 ## 📜 License
 
-#### This project is licensed under the Mulan License. Please check the [LICENSE](file://C:\GitRepository\FreeEpicGames-Neo\LICENSE) file for details.
+#### All Rights Reserved.Prohibition of commercial use.
