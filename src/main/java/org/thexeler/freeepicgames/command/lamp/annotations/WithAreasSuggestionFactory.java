@@ -26,7 +26,7 @@ public enum WithAreasSuggestionFactory implements SuggestionProvider.Factory<For
             ServerPlayer player = context.actor().requirePlayer();
             ServerLevel world = (player != null) ? player.serverLevel() : FreeEpicGames.OVER_WORLD;
 
-            return WorldCaptureDataAgent.getInstance(world).getAreas().stream().map(AreaView::getName).toList();
+            return WorldCaptureDataAgent.getInstance(world).getAllAreas().stream().map(AreaView::getName).toList();
         };
     }
 }

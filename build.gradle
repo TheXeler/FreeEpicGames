@@ -1,4 +1,6 @@
-import proguard.gradle.ProGuardTask
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+//import proguard.gradle.ProGuardTask
 
 buildscript {
     repositories {
@@ -102,6 +104,18 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+tasks.register('runShadowJar', ShadowJar) {
+    group = "shadow"
+
+    relocate 'io.github.revxrsal.lamp.common', "${project.group}.relocated.lamp.9common"
+    relocate 'io.github.revxrsal.lamp.brigadier', "${project.group}.relocated.lamp.brigadier"
+
+    archiveClassifier = 'relocated'
+    configurations = [project.configurations.shade]
+
+    exclude { file -> file.name == "module-info.class" }
+}
+
 dependencies {
     shade 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
     shade 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
@@ -113,6 +127,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     implementation 'com.mojang:brigadier:1.0.18'
+
+    api runShadowJar.outputs.files
+    additionalRuntimeClasspath runShadowJar.outputs.files
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -163,4 +180,9 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ["-parameters"]
 }

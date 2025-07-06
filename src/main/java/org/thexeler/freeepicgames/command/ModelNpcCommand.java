@@ -1,6 +1,7 @@
 package org.thexeler.freeepicgames.command;
 
 import net.minecraft.world.entity.Entity;
+import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
 import org.thexeler.freeepicgames.command.lamp.annotations.RequiresOP;
 import org.thexeler.freeepicgames.command.lamp.annotations.WithNPC;
@@ -15,34 +16,24 @@ import revxrsal.commands.annotation.Subcommand;
 
 @SuppressWarnings("unused")
 @Command("fegnpc")
-public class ModelNPCCommand {
+public class ModelNpcCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("create <type>")
-    public void create(ForgeCommandActor sender, @WithNPCType NPCType type) {
+    public void create(ForgeCommandActor sender, @WithNPCType String type) {
         WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        if (agent.createNPC(type) != null) {
+        if (agent.createNPC(NPCType.getType(type)) != null) {
             sender.reply("成功创建NPC");
         }
     }
 
     @CommandPlaceholder
     @RequiresOP
-    @Subcommand("create <type> <origin>")
-    public void create(ForgeCommandActor sender, @WithNPCType NPCType type, Entity origin) {
-        WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
-        if (agent.createNPC(type, origin) != null) {
-            sender.reply("成功附加NPC功能到已有生物");
-        }
-    }
-
-    @CommandPlaceholder
-    @RequiresOP
     @Subcommand("create <type> <selector>")
-    public void create(ForgeCommandActor sender, @WithNPCType NPCType type, EntitySelectorList<Entity> selector) {
+    public void create(ForgeCommandActor sender, @WithNPCType String type, EntitySelectorList<Entity> selector) {
         WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
         selector.forEach(entity -> {
-            if (agent.createNPC(type, entity) != null) {
+            if (agent.createNPC(NPCType.getType(type), entity) != null) {
                 sender.reply("成功附加NPC功能到已有生物");
             } else {
                 sender.reply("附加失败");
@@ -140,7 +131,8 @@ public class ModelNPCCommand {
         WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(sender.getLevel());
         NPCView npc = agent.getNPCView(id);
         if (npc != null) {
-
+            // TODO
+            FreeEpicGames.LOGGER.warn("没做完喵，诶嘿~");
         }
     }
 
@@ -148,5 +140,15 @@ public class ModelNPCCommand {
     @RequiresOP
     @Subcommand("config <selector>")
     public void config(ForgeCommandActor sender, EntitySelectorList<Entity> selector) {
+    }
+
+    @CommandPlaceholder
+    @RequiresOP
+    @Subcommand("reload")
+    public void reload(ForgeCommandActor sender) {
+        sender.reply("正在重载配置文件...");
+        NPCType.expire();
+        NPCType.init();
+        sender.reply("配置文件重载完成");
     }
 }

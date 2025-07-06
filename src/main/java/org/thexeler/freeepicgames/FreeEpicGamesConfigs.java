@@ -32,7 +32,7 @@ public class FreeEpicGamesConfigs {
     public static boolean isEnabledRaidCachePersistence;
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
+    static void onLoad(final ModConfigEvent.Loading event) {
         isEnabledCapture = ENABLED_CAPTURE.get();
         isEnabledCaptureCachePersistence = ENABLED_CAPTURE_PERSISTENCE.get();
         captureTick = CAPTURE_TICK.get();

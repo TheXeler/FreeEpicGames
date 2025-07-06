@@ -5,14 +5,11 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.database.agent.WorldNPCDataAgent;
 import org.thexeler.freeepicgames.database.type.NPCType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -58,13 +55,9 @@ public class NPCView implements AbstractView {
         rootAgent.deleteNPC(id);
     }
 
-    public static NPCView getEntity(Entity entity) {
-        try (Level level = entity.level()) {
-            if (level instanceof ServerLevel serverLevel) {
-                return getEntity(serverLevel, entity.getUUID());
-            }
-        } catch (IOException e) {
-            FreeEpicGames.LOGGER.error(e.getMessage());
+    public static NPCView getEntity(@NotNull Entity entity) {
+        if (entity.level() instanceof ServerLevel level) {
+            return getEntity(level, entity.getStringUUID());
         }
         return null;
     }

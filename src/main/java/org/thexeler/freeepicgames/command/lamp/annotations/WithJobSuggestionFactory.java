@@ -18,8 +18,6 @@ public enum WithJobSuggestionFactory implements SuggestionProvider.Factory<Forge
         if (annotationList.get(WithJob.class) == null) {
             return null;
         }
-        return context -> {
-            return JobType.getAllTypes();
-        };
+        return context -> JobType.getAllTypeName();
     }
 }

@@ -6,6 +6,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.command.ModelCaptureCommand;
 import org.thexeler.freeepicgames.command.ModelJobCommand;
+import org.thexeler.freeepicgames.command.ModelNpcCommand;
 import org.thexeler.freeepicgames.command.ModelRaidCommand;
 import org.thexeler.freeepicgames.command.lamp.ForgeLamp;
 import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
@@ -17,6 +18,7 @@ public class CommandEventHandler {
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
         Lamp<ForgeCommandActor> lamp = ForgeLamp.builder(event).build();
+        lamp.register(new ModelNpcCommand());
         if (FreeEpicGamesConfigs.isEnabledRaid) {
             lamp.register(new ModelRaidCommand());
         }

@@ -5,10 +5,6 @@ import lombok.Getter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Sheep;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
@@ -16,13 +12,12 @@ import org.thexeler.freeepicgames.database.type.NPCType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 import org.thexeler.freeepicgames.database.untils.ModSavedData;
 import org.thexeler.freeepicgames.database.view.NPCView;
-import org.thexeler.freeepicgames.events.NPCEvent;
+import org.thexeler.freeepicgames.events.NpcEvent;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 
 public class WorldNPCDataAgent implements AbstractDataAgent {
     private static final Map<ServerLevel, WorldNPCDataAgent> instances = new HashMap<>();
@@ -75,9 +70,9 @@ public class WorldNPCDataAgent implements AbstractDataAgent {
                     origin.getPersistentData().putBoolean("NoAI", true);
                 }
 
-                NeoForge.EVENT_BUS.post(new NPCEvent.NPCCreateEvent(view));
+                NeoForge.EVENT_BUS.post(new NpcEvent.CreateEvent(view));
                 world.addFreshEntity(origin);
-                NeoForge.EVENT_BUS.post(new NPCEvent.NPCJoinEvent(view, world));
+                NeoForge.EVENT_BUS.post(new NpcEvent.JoinEvent(view, world));
                 npcViewMap.put(view.getId(), view);
             } else {
                 FreeEpicGames.LOGGER.error("NPC {} already exists", origin.getStringUUID());

@@ -1,5 +1,5 @@
 {
-  "type": "freeepicgames:raid_dim",
+  "type": "freeepicgames:raid_type",
   "generator": {
     "type": "minecraft:flat",
     "settings": {

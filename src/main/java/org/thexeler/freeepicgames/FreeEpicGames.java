@@ -6,7 +6,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 import org.thexeler.freeepicgames.database.untils.ModSavedData;
 
@@ -20,7 +19,6 @@ public class FreeEpicGames {
     public static ServerLevel OVER_WORLD = null;
 
     public FreeEpicGames(IEventBus modEventBus, ModContainer modContainer) {
-        modEventBus.register(this);
         modContainer.registerConfig(ModConfig.Type.SERVER, FreeEpicGamesConfigs.SPEC);
     }
 }

@@ -13,7 +13,10 @@ import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Random;
 
 @SuppressWarnings("unused")
 @Command("fegcapture")
@@ -22,7 +25,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area create <area> <x1> <y1> <z1> <x2> <y2> <z2>")
-    public void commandCreateArea(ForgeCommandActor sender, String area, @WithTargetLocation double x1, @WithTargetLocationYZ double y1, @WithTargetLocationZ double z1, @WithTargetLocation double x2, @WithTargetLocationYZ double y2, @WithTargetLocationZ double z2) {
+    public void areaCreate(ForgeCommandActor sender, String area, @WithTargetLocation double x1, @WithTargetLocationYZ double y1, @WithTargetLocationZ double z1, @WithTargetLocation double x2, @WithTargetLocationYZ double y2, @WithTargetLocationZ double z2) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         if (agent.createArea(area, x1, y1, z1, x2, y2, z2)) {
             sender.reply("成功创建区域" + area);
@@ -34,7 +37,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area delete <area>")
-    public void commandDeleteArea(ForgeCommandActor sender, @WithAreas String area) {
+    public void areaDelete(ForgeCommandActor sender, @WithAreas String area) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         if (agent.deleteArea(area)) {
             sender.reply("成功删除区域" + area);
@@ -46,7 +49,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> LockWhenAttackerCapture <areas>")
-    public void commandSetLockWhenAttackerCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
+    public void areaSetLockWhenAttackerCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -60,7 +63,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> UnlockWhenAttackerCapture <areas>")
-    public void commandSetUnlockWhenAttackerCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
+    public void areaSetUnlockWhenAttackerCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -74,7 +77,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> LockWhenDefenderCapture <areas>")
-    public void commandSetLockWhenDefenderCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
+    public void areaSetLockWhenDefenderCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -88,7 +91,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> UnlockWhenDefenderCapture <areas>")
-    public void commandSetUnlockWhenDefenderCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
+    public void areaSetUnlockWhenDefenderCapture(ForgeCommandActor sender, @WithAreas String area, @WithAreas String[] areas) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -102,7 +105,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> ExportSchedule <bool>")
-    public void commandSetExportObjective(ForgeCommandActor sender, @WithAreas String area, boolean bool) {
+    public void areaSetExportSchedule(ForgeCommandActor sender, @WithAreas String area, boolean bool) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -116,7 +119,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area set <area> ScheduleFormatExport <bool>")
-    public void commandSetExportDisplayObjective(ForgeCommandActor sender, @WithAreas String area, boolean bool) {
+    public void areaSetScheduleFormatExport(ForgeCommandActor sender, @WithAreas String area, boolean bool) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -130,7 +133,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area list")
-    public void commandListArea(ForgeCommandActor sender) {
+    public void areaList(ForgeCommandActor sender) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         Collection<AreaView> areaList = agent.getAllAreas();
         StringBuilder message = new StringBuilder("——————————共计" + areaList.size() + "个区域——————————\n");
@@ -159,7 +162,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area lock <area>")
-    public void commandSetLockArea(ForgeCommandActor sender, @WithAreas String area) {
+    public void areaLock(ForgeCommandActor sender, @WithAreas String area) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -173,7 +176,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area unlock <area>")
-    public void commandSetUnlockArea(ForgeCommandActor sender, @WithAreas String area) {
+    public void areaUnlock(ForgeCommandActor sender, @WithAreas String area) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -187,7 +190,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area teleport <area>")
-    public void commandTeleport(ForgeCommandActor sender, @WithAreas String area) {
+    public void areaTeleport(ForgeCommandActor sender, @WithAreas String area) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         ServerPlayer player = sender.requirePlayer();
@@ -209,7 +212,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area teleport <area> <player>")
-    public void commandTeleportTarget(ForgeCommandActor sender, @WithAreas String area, ServerPlayer player) {
+    public void areaTeleport(ForgeCommandActor sender, @WithAreas String area, ServerPlayer player) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -226,7 +229,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area teleport <area> <selector>")
-    public void commandTeleportTargetPlayer(ForgeCommandActor sender, @WithAreas String area, EntitySelectorList<ServerPlayer> selector) {
+    public void areaTeleport(ForgeCommandActor sender, @WithAreas String area, EntitySelectorList<ServerPlayer> selector) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         AreaView view = agent.getAreaView(area);
         if (view != null) {
@@ -235,8 +238,8 @@ public class ModelCaptureCommand {
                 double maxX = view.getEnd().x - view.getPos().x;
                 double maxZ = view.getEnd().z - view.getPos().z;
                 player.setPos(view.getPos().x + (random.nextDouble() % maxX), view.getPos().y + 1, view.getPos().z + (random.nextDouble() % maxZ));
-                sender.reply("传送成功");
             });
+            sender.reply("传送成功");
         } else {
             sender.reply("传送失败:不存在的区域" + area);
         }
@@ -244,29 +247,8 @@ public class ModelCaptureCommand {
 
     @CommandPlaceholder
     @RequiresOP
-    @Subcommand("area teleport <area> <selector>")
-    public void commandTeleportTargetBlock(ForgeCommandActor sender, @WithAreas String area, EntitySelectorList<ServerPlayer> selector) {
-        List<ServerPlayer> players = selector.stream().filter(entity -> entity instanceof ServerPlayer).toList();
-        if (!players.isEmpty()) {
-            WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
-            AreaView view = agent.getAreaView(area);
-            if (view != null) {
-                players.forEach(player -> {
-                    double maxX = view.getEnd().x - view.getPos().x;
-                    double maxZ = view.getEnd().z - view.getPos().z;
-                    player.teleportTo(view.getPos().x + (Math.random() % maxX), view.getPos().y + 1, view.getPos().z + (Math.random() % maxZ));
-                });
-                sender.reply("传送成功");
-            } else {
-                sender.reply("传送失败:不存在的区域" + area);
-            }
-        }
-    }
-
-    @CommandPlaceholder
-    @RequiresOP
     @Subcommand("set Rate <rate>")
-    public void commandSetRate(ForgeCommandActor sender, float rate) {
+    public void setRate(ForgeCommandActor sender, float rate) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         agent.setRate(rate);
         sender.reply("设置成功");
@@ -275,7 +257,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("set OutputObjectiveName <object>")
-    public void commandSetObjective(ForgeCommandActor sender, String object) {
+    public void setOutputObjectiveName(ForgeCommandActor sender, String object) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         agent.setExportObjectiveName(object);
         sender.reply("设置成功");
@@ -284,7 +266,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("set team Attacker <team>")
-    public void commandSetTeamAttacker(ForgeCommandActor sender, @WithTeam String team) {
+    public void setTeamAttacker(ForgeCommandActor sender, @WithTeam String team) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         if (sender.getLevel().getScoreboard().getPlayerTeam(team) != null) {
             agent.setAttacker(team);
@@ -297,7 +279,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("set team Defender <team>")
-    public void commandSetTeamDefender(ForgeCommandActor sender, @WithTeam String team) {
+    public void setTeamDefender(ForgeCommandActor sender, @WithTeam String team) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         if (sender.getLevel().getScoreboard().getTeamNames().contains(team)) {
             agent.setDefender(team);
@@ -310,7 +292,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("set team AttackerCommander <player>")
-    public void commandSetTeamAttackerCommander(ForgeCommandActor sender, ServerPlayer player) {
+    public void setTeamAttackerCommander(ForgeCommandActor sender, ServerPlayer player) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         agent.setAttackerCommander(player.getStringUUID());
         sender.reply("成功设置进攻方指挥官为" + player.getDisplayName().getString());
@@ -319,7 +301,7 @@ public class ModelCaptureCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("set team DefenderCommander <player>")
-    public void commandSetTeamDefenderCommander(ForgeCommandActor sender, ServerPlayer player) {
+    public void setTeamDefenderCommander(ForgeCommandActor sender, ServerPlayer player) {
         WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(sender.getLevel());
         agent.setDefenderCommander(player.getStringUUID());
         sender.reply("成功设置防守方指挥官为 {}" + player.getDisplayName().getString());

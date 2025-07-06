@@ -61,7 +61,7 @@ public class NPCType {
             String typeURI = object.get("base_id").getAsString();
             Optional<EntityType<?>> typeOptional = EntityType.byString(typeURI);
             if (typeOptional.isPresent()) {
-                types.put(name, new NPCType(name,typeOptional.get(),
+                types.put(name, new NPCType(name, typeOptional.get(),
                         DataUtils.getValue(object, "is_invulnerable", true),
                         DataUtils.getValue(object, "is_invisible", true),
                         DataUtils.getValue(object, "is_no_gravity", true),

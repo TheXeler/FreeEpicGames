@@ -1,37 +1,83 @@
-# FreeEpicGames
+# 🎮 FreeEpicGames 模组
 
-#### 介绍
-FE小游戏框架模组开源代码仓库
+#### FreeEpicGames 是一个基于 NeoForge 的 Minecraft 模组，提供丰富的游戏内容扩展功能，包括职业系统、副本机制、NPC 交互等。适用于构建 RPG 类型服务器或任务驱动型玩法。
 
-#### 软件架构
-软件架构说明
+## 📦 功能模块简介
 
+### 1. 🧙‍♂️ Job - 职业系统
 
-#### 安装教程
+#### 支持创建和管理多种职业类型。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### 提供命令控制职业分配与切换。
 
-#### 使用说明
+#### 可用于限制玩家行为或解锁特定技能。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### 命令域：`/fegjob`
 
-#### 参与贡献
+### 2. ⚔️ Raid - 副本系统
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+#### 支持创建不同类型的副本实例。
 
+#### 包含副本触发、进度追踪、奖励配置等功能。
 
-#### 特技
+#### 支持自定义维度生成专属副本世界。
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+#### 命令域：`/fegraid`
+
+### 3.🧍‍♂️ NPC - 非玩家角色
+
+#### 支持生成和管理多种类型的 NPC。
+
+#### 支持与玩家互动、任务发布、对话逻辑等。
+
+#### 可绑定事件响应，如点击、交易、任务领取。
+
+#### 命令域：`/fegnpc`
+
+### 4. 🗺️ Capture - 区域控制系统
+
+#### 支持设置和管理地图区域。
+
+#### 可用于领地争夺、据点占领、PVP 控制等玩法。
+
+#### 提供区域权限与归属管理功能。
+
+#### 命令域：`/fegcapture`
+
+## 🌐 多语言支持
+
+#### 项目包含英文语言包（未完成），后续可扩展其他语言以支持多国玩家。
+
+## 📦 资源结构说明
+
+### 资源文件
+
+| 资源文件                       | 用途描述          |
+|----------------------------|---------------|
+| `.minecraft/fegames/`      | 配置文件主目录       |
+| `.minecraft/fegames/chest` | 虚拟箱子及箱子菜单配置文件 |
+| `.minecraft/fegames/job`   | 职业相关配置文件      |
+| `.minecraft/fegames/npc`   | NPC相关配置文件     |
+| `.minecraft/fegames/raid`  | Raid相关配置文件    |
+
+## 🛠️ 未来开发计划
+
+**提供KubeJS事件适配**
+
+**可视化配置界面**
+
+**增加配置项**
+
+**生成式副本**
+
+**完善Wiki**
+
+**完善的JSON生成器**
+
+## 📬 联系与贡献
+
+#### 欢迎提交 Issue 或 PR 来完善本模组！
+
+## 📜 协议
+
+#### 本项目采用 木兰 License，请查看 LICENSE 文件。

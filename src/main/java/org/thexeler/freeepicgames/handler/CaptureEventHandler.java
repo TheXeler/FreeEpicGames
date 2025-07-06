@@ -29,7 +29,7 @@ public class CaptureEventHandler {
     private static int tickCount = 0;
 
     @SubscribeEvent
-    public static void onServerTick(ServerTickEvent event) {
+    public static void onServerTick(ServerTickEvent.Post event) {
         if (FreeEpicGamesConfigs.isEnabledCapture) {
             tickCount++;
             if (tickCount % FreeEpicGamesConfigs.captureTick == 0) {

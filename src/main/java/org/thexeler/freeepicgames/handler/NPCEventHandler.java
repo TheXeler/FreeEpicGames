@@ -10,7 +10,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.thexeler.freeepicgames.database.agent.WorldNPCDataAgent;
 import org.thexeler.freeepicgames.database.view.NPCView;
-import org.thexeler.freeepicgames.events.NPCEvent;
+import org.thexeler.freeepicgames.events.NpcEvent;
 
 @EventBusSubscriber
 public class NPCEventHandler {
@@ -19,7 +19,7 @@ public class NPCEventHandler {
     public static void onEntityDeath(LivingDeathEvent event) {
         NPCView entity = NPCView.getEntity(event.getEntity());
         if (entity != null) {
-            NPCEvent.NPCDeathEvent deathEvent = new NPCEvent.NPCDeathEvent(entity, event.getSource());
+            NpcEvent.DeathEvent deathEvent = new NpcEvent.DeathEvent(entity, event.getSource());
             NeoForge.EVENT_BUS.post(deathEvent);
             event.setCanceled(deathEvent.isCanceled());
             if (!deathEvent.isCanceled()) {
@@ -32,7 +32,7 @@ public class NPCEventHandler {
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         NPCView entity = NPCView.getEntity(event.getTarget());
         if (entity != null) {
-            NeoForge.EVENT_BUS.post(new NPCEvent.NPCInteractEvent(entity, event.getEntity()));
+            NeoForge.EVENT_BUS.post(new NpcEvent.InteractEvent(entity, event.getEntity()));
             event.setCanceled(true);
         }
     }
@@ -41,17 +41,17 @@ public class NPCEventHandler {
     public static void onEntityDamage(LivingIncomingDamageEvent event) {
         NPCView entity = NPCView.getEntity(event.getEntity());
         if (entity != null) {
-            NPCEvent.NPCDamageEvent damageEvent = new NPCEvent.NPCDamageEvent(entity, event.getSource(), event.getAmount());
+            NpcEvent.DamageEvent damageEvent = new NpcEvent.DamageEvent(entity, event.getSource(), event.getAmount());
             NeoForge.EVENT_BUS.post(damageEvent);
             event.setCanceled(damageEvent.isCanceled());
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onEntityTick(ServerTickEvent event) {
+    public static void onEntityTick(ServerTickEvent.Post event) {
         event.getServer().getAllLevels().forEach(serverLevel -> {
             WorldNPCDataAgent agent = WorldNPCDataAgent.getInstance(serverLevel);
-            agent.getAllNPC().forEach(entity -> NeoForge.EVENT_BUS.post(new NPCEvent.NPCTickEvent(entity)));
+            agent.getAllNPC().forEach(entity -> NeoForge.EVENT_BUS.post(new NpcEvent.TickEvent(entity)));
         });
     }
 }
