@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldNpcDataAgent implements AbstractDataAgent {
+public class WorldNpcDataAgent extends AbstractDataAgent {
     private static final Map<ServerLevel, WorldNpcDataAgent> instances = new HashMap<>();
 
     @Getter
@@ -64,7 +64,7 @@ public class WorldNpcDataAgent implements AbstractDataAgent {
                 origin.setInvisible(type.isInvisible());
                 origin.setNoGravity(type.isNoGravity());
                 if (type.isNoAI()) {
-                    if(origin instanceof Mob mob){
+                    if (origin instanceof Mob mob) {
                         mob.setNoAi(true);
                     }
                     origin.getPersistentData().putBoolean("NoAI", true);
@@ -116,5 +116,9 @@ public class WorldNpcDataAgent implements AbstractDataAgent {
         // optionData.addProperty("Attacker", attacker);
 
         DataUtils.computeViewMap(npcViewMap, npcData);
+    }
+
+    public static void expire() {
+        instances.clear();
     }
 }

@@ -4,7 +4,7 @@
     "type": "minecraft:flat",
     "settings": {
       "layers": [],
-      "biome": "plains",
+      "biome": "void",
       "lakes": false,
       "features": false
     }

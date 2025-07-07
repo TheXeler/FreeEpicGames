@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GlobalJobDataAgent implements AbstractDataAgent {
+public class GlobalJobDataAgent extends AbstractDataAgent {
     private static GlobalJobDataAgent instance;
 
     private final JsonObject playerData;
@@ -68,5 +68,9 @@ public class GlobalJobDataAgent implements AbstractDataAgent {
             DataUtils.clearDeprecatedKey(playerData, playerJobMap);
             playerJobMap.forEach(playerData::addProperty);
         }
+    }
+
+    public static void expire() {
+        instance = null;
     }
 }

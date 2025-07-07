@@ -6,39 +6,48 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
+import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.type.RaidType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
+import oshi.util.tuples.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RaidInstanceView implements AbstractCacheView {
     private final static Map<String, RaidInstanceView> playerInstanceMappings = Collections.synchronizedMap(new HashMap<>());
+    private final static Map<String, Pair<String, Vec3>> playerBackPosMappings = Collections.synchronizedMap(new HashMap<>());
 
     @Getter
     private final String id;
+    @Getter
     private final RaidType baseType;
 
+    @Getter
     private final ChunkPos startChunk, endChunk;
     private final Map<String, Vec3> playerCheckpointPosMap;
     private final Map<BlockPos, Container> sharedTreasuresMap;
     private final Map<String, Map<BlockPos, Container>> playerTreasuresMap;
 
+    @Getter
     private boolean isActive;
+    @Getter
     private final AABB frame;
+    @Getter
     private final BlockPos blockPosOffset;
 
     public RaidInstanceView(String id, RaidType baseType, ChunkPos startChunk) {
@@ -47,8 +56,8 @@ public class RaidInstanceView implements AbstractCacheView {
 
         this.startChunk = startChunk;
         this.endChunk = new ChunkPos(
-                SectionPos.blockToSectionCoord(startChunk.getMaxBlockX() + baseType.getSize().getX()),
-                SectionPos.blockToSectionCoord(startChunk.getMaxBlockZ() + baseType.getSize().getZ()));
+                SectionPos.blockToSectionCoord(startChunk.getMaxBlockX() + baseType.getSizeX()),
+                SectionPos.blockToSectionCoord(startChunk.getMaxBlockZ() + baseType.getSizeZ()));
 
         this.playerCheckpointPosMap = new HashMap<>();
 
@@ -135,8 +144,6 @@ public class RaidInstanceView implements AbstractCacheView {
             });
             return ChestMenu.threeRows(ci, i, container);
         }, Component.literal(treasure.getTitle()));
-
-
     }
 
     public boolean isInside(Vec3 pos) {
@@ -157,8 +164,10 @@ public class RaidInstanceView implements AbstractCacheView {
         player.teleportTo(FreeEpicGames.RAID_WORLD, checkpointPos.x, checkpointPos.y, checkpointPos.z, Collections.emptySet(), 0.0F, 0.0F);
     }
 
-    public void setPlayer(ServerPlayer player, Vec3 checkpointPos) {
+    public void joinPlayer(ServerPlayer player, Vec3 checkpointPos) {
         playerInstanceMappings.put(player.getStringUUID(), this);
+        playerBackPosMappings.put(player.getStringUUID(),
+                new Pair<>(player.level().dimensionTypeRegistration().getKey().registry().toString(), new Vec3(player.getX(), player.getY(), player.getZ())));
         playerCheckpointPosMap.put(player.getStringUUID(), checkpointPos);
 
         if (!FreeEpicGames.RAID_WORLD.players().contains(player)) {
@@ -181,22 +190,40 @@ public class RaidInstanceView implements AbstractCacheView {
         player.teleportTo(FreeEpicGames.OVER_WORLD, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), player.getYRot(), player.getXRot());
     }
 
-    public static RaidInstanceView getRaidInstanceFromPlayer(Player player) {
+    @Nullable
+    public static RaidInstanceView getRaidInstanceFromPlayer(ServerPlayer player) {
         return playerInstanceMappings.get(player.getStringUUID());
+    }
+
+    @Nullable
+    public static RaidInstanceView getRaidInstanceFromChunk(ChunkPos chunkPos) {
+        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        AtomicReference<RaidInstanceView> ret = new AtomicReference<>(null);
+        agent.getAllRaidInstance().forEach(view -> {
+            if (view.isInside(new Vec3(chunkPos.getMiddleBlockX(), 0, chunkPos.getMiddleBlockZ()))) {
+                ret.set(view);
+            }
+        });
+        return ret.get();
+    }
+
+    public static Pair<String, Vec3> getBackPos(ServerPlayer player) {
+        return playerBackPosMappings.get(player.getStringUUID());
     }
 
     public void build() {
         if (!isActive) {
             FreeEpicGames.LOGGER.info("Raid instance building: {}", id);
 
-            int targetX = 0, targetZ = 0;
-            int chunkSizeX = endChunk.x - startChunk.x, chunkSizeZ = endChunk.z - startChunk.z;
+            int targetX = startChunk.x, targetZ = startChunk.z;
             while (targetX <= endChunk.x) {
                 while (targetZ <= endChunk.z) {
-                    LevelChunk chunk = FreeEpicGames.RAID_WORLD.getChunk(targetX, targetZ);
-                    //TODO
+                    int offsetX = targetX - startChunk.x, offsetZ = targetZ - startChunk.z;
+                    CompoundTag tag = baseType.getChunkTemplates().get(offsetX + (offsetZ * baseType.getSizeX()));
+                    FreeEpicGames.RAID_WORLD.getChunkSource().chunkMap.write(new ChunkPos(targetX, targetZ), tag);
                     targetZ++;
                 }
+                targetZ = startChunk.z;
                 targetX++;
             }
 

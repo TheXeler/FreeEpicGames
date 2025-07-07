@@ -1,15 +1,21 @@
 package org.thexeler.freeepicgames.handler;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
+import org.thexeler.freeepicgames.FreeEpicGamesKeys;
 import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import oshi.util.tuples.Pair;
+
+import java.util.Collections;
 
 @EventBusSubscriber
 public class RaidEventHandler {
@@ -24,6 +30,7 @@ public class RaidEventHandler {
                     RaidTreasureType treasure = view.getTreasureType(event.getPos());
                     if (treasure != null) {
                         player.openMenu(view.getMenuProvider(player, event.getPos()));
+                        event.setCanceled(true);
                     }
                 }
             }
@@ -33,10 +40,21 @@ public class RaidEventHandler {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
-            RaidInstanceView view = agent.getRaidInstance(player);
-            if (view != null) {
-                view.respawn(player);
+            if (player.level().equals(FreeEpicGames.RAID_WORLD)) {
+                GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+                RaidInstanceView view = agent.getRaidInstance(player);
+                if (view != null) {
+                    view.respawn(player);
+                } else {
+                    Pair<String, Vec3> backPosInfo = agent.getBackPos(player);
+                    ServerLevel level = FreeEpicGames.OVER_WORLD;
+                    if (player.getServer() != null) {
+                        level = player.getServer().getLevel(FreeEpicGamesKeys.parseWorldKey(backPosInfo.getA()));
+                    }
+                    if (level != null) {
+                        player.teleportTo(level, backPosInfo.getB().x, backPosInfo.getB().y, backPosInfo.getB().z, Collections.emptySet(), 0.0F, 0.0F);
+                    }
+                }
             }
         }
     }

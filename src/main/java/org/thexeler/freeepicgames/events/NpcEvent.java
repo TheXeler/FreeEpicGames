@@ -11,7 +11,7 @@ import org.thexeler.freeepicgames.database.view.NpcView;
 
 public abstract class NpcEvent extends Event {
     @Getter
-    Entity entity;
+    private final Entity entity;
     @Getter
     private final NpcView view;
 
@@ -35,7 +35,6 @@ public abstract class NpcEvent extends Event {
             this.level = level;
         }
     }
-
 
     public static class DeathEvent extends NpcEvent implements ICancellableEvent {
         @Getter

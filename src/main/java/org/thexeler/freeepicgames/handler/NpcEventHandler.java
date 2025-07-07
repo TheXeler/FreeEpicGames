@@ -13,7 +13,7 @@ import org.thexeler.freeepicgames.database.view.NpcView;
 import org.thexeler.freeepicgames.events.NpcEvent;
 
 @EventBusSubscriber
-public class NPCEventHandler {
+public class NpcEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onEntityDeath(LivingDeathEvent event) {

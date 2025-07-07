@@ -1,6 +1,7 @@
 package org.thexeler.freeepicgames.database.agent;
 
-public interface AbstractDataAgent {
-    void load();
-    void save();
+public abstract class AbstractDataAgent {
+    public abstract void load();
+
+    public abstract void save();
 }
