@@ -80,4 +80,4 @@
 
 ## 📜 License
 
-#### All Rights Reserved.Prohibition of commercial use.
+#### This project is licensed under CC BY-NC-SA 4.0, and the copyright belongs to the author.
