@@ -2,6 +2,7 @@ package org.thexeler.freeepicgames.database.type;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
 import org.thexeler.freeepicgames.database.untils.DataPacket;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 import org.thexeler.freeepicgames.database.view.NpcView;
+import org.thexeler.mind.MindMachine;
 
 import java.util.*;
 
@@ -28,14 +30,18 @@ public class NpcType {
     private final boolean isNoGravity;
     @Getter
     private final boolean isNoAI;
+    @Getter
+    @Setter
+    private boolean isWeakAI;
 
-    private NpcType(String name, EntityType<?> type, boolean isInvulnerable, boolean isInvisible, boolean isNoGravity, boolean isNoAI) {
+    private NpcType(String name, EntityType<?> type, boolean isInvulnerable, boolean isInvisible, boolean isNoGravity, boolean isNoAI, boolean isWeakAI) {
         this.name = name;
         this.entityType = type;
         this.isInvulnerable = isInvulnerable;
         this.isInvisible = isInvisible;
         this.isNoGravity = isNoGravity;
         this.isNoAI = isNoAI;
+        this.isWeakAI = isWeakAI;
     }
 
     public NpcView create(ServerLevel level) {
@@ -52,6 +58,7 @@ public class NpcType {
         jsonObject.addProperty("is_invisible", isInvisible);
         jsonObject.addProperty("is_no_gravity", isNoGravity);
         jsonObject.addProperty("is_no_ai", isNoAI);
+        jsonObject.addProperty("is_weak_ai", isWeakAI);
 
         return jsonObject;
     }
@@ -65,7 +72,8 @@ public class NpcType {
                         DataUtils.getValue(object, "is_invulnerable", true),
                         DataUtils.getValue(object, "is_invisible", true),
                         DataUtils.getValue(object, "is_no_gravity", true),
-                        DataUtils.getValue(object, "is_no_ai", true)));
+                        DataUtils.getValue(object, "is_no_ai", true),
+                        DataUtils.getValue(object, "is_weak_ai", false)));
                 return true;
             } else {
                 FreeEpicGames.LOGGER.error("Unknow entity type from URI : {}", typeURI);

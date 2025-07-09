@@ -6,6 +6,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -81,33 +83,65 @@ public abstract class NpcEvent extends Event {
         }
     }
 
-    public static class KillEntityEvent extends NpcEvent {
+    public static class KilledEvent extends NpcEvent implements ICancellableEvent {
         @Getter
         private final Entity entity;
+        @Getter
+        private final DamageSource source;
 
-        public KillEntityEvent(NpcView npc, Entity entity) {
+        public KilledEvent(NpcView npc, Entity entity, DamageSource source) {
             super(npc);
             this.entity = entity;
+            this.source = source;
         }
     }
 
     public static class MeleeAttackEvent extends NpcEvent {
         @Getter
         private final Entity target;
+        @Getter
+        private final DamageSource source;
+        @Getter
+        @Setter
+        private float amount;
+        @Getter
+        private final DamageContainer container;
 
-        public MeleeAttackEvent(NpcView npc, Entity target) {
+        public MeleeAttackEvent(NpcView npc, Entity target, DamageSource source, float amount, DamageContainer container) {
             super(npc);
             this.target = target;
+            this.source = source;
+            this.amount = amount;
+            this.container = container;
         }
     }
 
-    public static class RangedAttackEvent extends NpcEvent {
+    public abstract static class RangeAttack extends NpcEvent {
         @Getter
-        private final Entity target;
+        private final Projectile projectile;
 
-        public RangedAttackEvent(NpcView npc, Entity target) {
+        public RangeAttack(NpcView npc, Projectile projectile) {
             super(npc);
-            this.target = target;
+            this.projectile = projectile;
+        }
+
+        public static class FireEvent extends RangeAttack {
+            public FireEvent(NpcView npc, Projectile projectile) {
+                super(npc, projectile);
+            }
+        }
+
+        public static class HitEvent extends RangeAttack implements ICancellableEvent {
+            @Getter
+            private final HitResult result;
+            @Getter
+            private final Entity target;
+
+            public HitEvent(NpcView npc, Projectile projectile, HitResult result, Entity target) {
+                super(npc, projectile);
+                this.result = result;
+                this.target = target;
+            }
         }
     }
 }

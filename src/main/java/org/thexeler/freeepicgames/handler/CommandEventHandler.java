@@ -1,6 +1,7 @@
 package org.thexeler.freeepicgames.handler;
 
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.command.ModelCaptureCommand;
@@ -11,6 +12,7 @@ import org.thexeler.freeepicgames.command.lamp.ForgeLamp;
 import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
 import revxrsal.commands.Lamp;
 
+@EventBusSubscriber
 public class CommandEventHandler {
 
     @SubscribeEvent

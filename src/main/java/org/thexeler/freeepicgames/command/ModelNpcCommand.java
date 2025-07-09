@@ -120,10 +120,10 @@ public class ModelNpcCommand {
         NpcView npc = agent.getNpcView(id);
         if (npc != null) {
             sender.reply("NPC信息:");
-            sender.reply("实体: " + npc.getEntityType().getEntityType().toString());
+            sender.reply("实体: " + npc.getNpcType().getEntityType().toString());
             sender.reply("位置: " + npc.getOriginEntity().getX() + ", " + npc.getOriginEntity().getY() + ", " + npc.getOriginEntity().getZ());
             sender.reply("ID: " + npc.getId());
-            sender.reply("类型: " + npc.getEntityType().getName());
+            sender.reply("类型: " + npc.getNpcType().getName());
             sender.reply("附加数据: ");
             npc.getNpcData().forEach((name, value) ->
                     sender.reply("- " + name + ": " + value));

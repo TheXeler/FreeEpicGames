@@ -43,7 +43,6 @@ public class FreeEpicGames {
         modContainer.registerConfig(ModConfig.Type.SERVER, FreeEpicGamesConfigs.SPEC);
 
         EVENT_LISTENER.add(new CaptureEventHandler());
-        EVENT_LISTENER.add(new CommandEventHandler());
         EVENT_LISTENER.add(new JobEventHandler());
         EVENT_LISTENER.add(new NpcEventHandler());
         EVENT_LISTENER.add(new RaidEventHandler());

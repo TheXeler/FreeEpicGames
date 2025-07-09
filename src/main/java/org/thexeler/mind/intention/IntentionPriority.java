@@ -1,6 +1,7 @@
 package org.thexeler.mind.intention;
 
 public enum IntentionPriority {
+    NEVER,
     LOWEST,
     LOW,
     NORMAL,
