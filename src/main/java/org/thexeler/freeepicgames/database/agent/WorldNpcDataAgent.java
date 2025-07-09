@@ -42,15 +42,15 @@ public class WorldNpcDataAgent extends AbstractDataAgent {
         return instances.computeIfAbsent(world, WorldNpcDataAgent::new);
     }
 
-    public Collection<NpcView> getAllNPC() {
+    public Collection<NpcView> getAllNpc() {
         return npcViewMap.values();
     }
 
-    public NpcView createNPC(NpcType type) {
-        return createNPC(type, null);
+    public NpcView createNpc(NpcType type) {
+        return createNpc(type, null);
     }
 
-    public NpcView createNPC(NpcType type, Entity origin) {
+    public NpcView createNpc(NpcType type, Entity origin) {
         NpcView view = null;
         if (origin == null) {
             origin = type.getEntityType().create(world);
@@ -84,9 +84,8 @@ public class WorldNpcDataAgent extends AbstractDataAgent {
         return view;
     }
 
-    public boolean deleteNPC(String id) {
+    public boolean deleteNpc(String id) {
         if (npcViewMap.get(id) != null) {
-            npcViewMap.get(id).discard();
             npcViewMap.remove(id);
             return true;
         } else {
@@ -95,7 +94,7 @@ public class WorldNpcDataAgent extends AbstractDataAgent {
     }
 
     @Nullable
-    public NpcView getNPCView(String id) {
+    public NpcView getNpcView(String id) {
         return npcViewMap.get(id);
     }
 

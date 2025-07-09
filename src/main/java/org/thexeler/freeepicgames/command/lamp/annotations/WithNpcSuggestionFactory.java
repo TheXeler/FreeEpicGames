@@ -11,7 +11,7 @@ import revxrsal.commands.autocomplete.SuggestionProvider;
 
 import java.lang.reflect.Type;
 
-public enum WithNPCSuggestionFactory implements SuggestionProvider.Factory<ForgeCommandActor> {
+public enum WithNpcSuggestionFactory implements SuggestionProvider.Factory<ForgeCommandActor> {
     INSTANCE;
 
     @Override
@@ -21,7 +21,7 @@ public enum WithNPCSuggestionFactory implements SuggestionProvider.Factory<Forge
         }
         return context -> {
             WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(context.actor().getLevel());
-            return agent.getAllNPC().stream().map(NpcView::getId).toList();
+            return agent.getAllNpc().stream().map(NpcView::getId).toList();
         };
     }
 }

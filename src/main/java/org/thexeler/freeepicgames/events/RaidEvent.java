@@ -3,6 +3,7 @@ package org.thexeler.freeepicgames.events;
 import lombok.Getter;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public abstract class RaidEvent extends Event {
 
     public static class CreateEvent extends RaidEvent {
         public CreateEvent(RaidInstanceView view) {
+            super(view);
+        }
+    }
+
+    public static class DestroyEvent extends RaidEvent implements ICancellableEvent {
+        public DestroyEvent(RaidInstanceView view) {
             super(view);
         }
     }

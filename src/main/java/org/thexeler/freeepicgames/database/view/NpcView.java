@@ -1,6 +1,5 @@
 package org.thexeler.freeepicgames.database.view;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.server.level.ServerLevel;
@@ -52,7 +51,7 @@ public class NpcView implements AbstractView {
     }
 
     public void discardAdditional() {
-        rootAgent.deleteNPC(id);
+        rootAgent.deleteNpc(id);
     }
 
     public static NpcView getEntity(@NotNull Entity entity) {
@@ -67,13 +66,12 @@ public class NpcView implements AbstractView {
     }
 
     public static NpcView getEntity(ServerLevel level, String id) {
-        return WorldNpcDataAgent.getInstance(level).getNPCView(id);
+        return WorldNpcDataAgent.getInstance(level).getNpcView(id);
     }
 
     @Override
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-        Gson gson = new Gson();
 
         jsonObject.addProperty("id", id);
         jsonObject.addProperty("type", entityType.getName());

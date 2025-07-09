@@ -50,11 +50,18 @@ public class GlobalRaidDataAgent extends AbstractDataAgent {
             raidInstanceView = new RaidInstanceView(uuid, type, locateEmptyChunk(type));
 
             raidInstanceView.build();
-            // TODO
 
             raidInstances.put(uuid, raidInstanceView);
         }
         return raidInstanceView;
+    }
+
+    public void removeRaidInstance(RaidInstanceView raidInstanceView) {
+        if (raidInstanceView.isActive()) {
+            raidInstanceView.destroy();
+        } else {
+            raidInstances.remove(raidInstanceView.getId());
+        }
     }
 
     public ChunkPos locateEmptyChunk(RaidType type) {

@@ -7,7 +7,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -16,17 +15,16 @@ import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
 import org.thexeler.freeepicgames.database.type.JobType;
 
-@EventBusSubscriber
 public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onPlayerDeath(LivingDeathEvent event) {
+    public void onPlayerDeath(LivingDeathEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
             player.getInventory().clearContent();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
             GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
             JobType type = JobType.getType(agent.getPlayerJob(player));
@@ -56,7 +54,7 @@ public class JobEventHandler {
     }
 
     @SubscribeEvent
-    public static void onItemUse(LivingEntityUseItemEvent event) {
+    public void onItemUse(LivingEntityUseItemEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
             CustomData data = event.getItem().getComponents().get(DataComponents.CUSTOM_DATA);
             if (data != null && data.contains("custom_command")) {

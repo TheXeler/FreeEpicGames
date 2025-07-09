@@ -10,7 +10,7 @@ import revxrsal.commands.autocomplete.SuggestionProvider;
 
 import java.lang.reflect.Type;
 
-public enum WithNPCTypeSuggestionFactory implements SuggestionProvider.Factory<ForgeCommandActor> {
+public enum WithNpcTypeSuggestionFactory implements SuggestionProvider.Factory<ForgeCommandActor> {
     INSTANCE;
 
     @Override

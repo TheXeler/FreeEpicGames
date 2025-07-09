@@ -40,7 +40,7 @@ public class NpcType {
 
     public NpcView create(ServerLevel level) {
         WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(level);
-        return agent.createNPC(this, null);
+        return agent.createNpc(this, null);
     }
 
     private JsonObject toJson() {
@@ -100,18 +100,18 @@ public class NpcType {
     }
 
     public static void init() {
-        FreeEpicGames.LOGGER.info("Loading NpcView types...");
+        FreeEpicGames.LOGGER.info("Loading Npc types...");
         DataUtils.getPackAllData(DataPacket.NPC_TYPE).forEach(NpcType::register);
-        FreeEpicGames.LOGGER.info("Loaded {} NpcView types", types.size());
+        FreeEpicGames.LOGGER.info("Loaded {} Npc types", types.size());
     }
 
     public static void expire() {
-        FreeEpicGames.LOGGER.info("Saving NpcView types...");
+        FreeEpicGames.LOGGER.info("Saving Npc types...");
         Map<String, JsonObject> jsonMap = new HashMap<>();
         types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
         DataUtils.savePacketAllData(DataPacket.NPC_TYPE, jsonMap);
-        FreeEpicGames.LOGGER.info("Expiring NpcView types...");
+        FreeEpicGames.LOGGER.info("Expiring Npc types...");
         types.clear();
-        FreeEpicGames.LOGGER.info("Expired NpcView types");
+        FreeEpicGames.LOGGER.info("Expired Npc types");
     }
 }

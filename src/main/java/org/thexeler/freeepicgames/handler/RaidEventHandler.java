@@ -2,10 +2,10 @@ package org.thexeler.freeepicgames.handler;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
@@ -17,11 +17,10 @@ import oshi.util.tuples.Pair;
 
 import java.util.Collections;
 
-@EventBusSubscriber
 public class RaidEventHandler {
 
     @SubscribeEvent
-    public static void onOpenContainer(PlayerInteractEvent.RightClickBlock event) {
+    public void onOpenContainer(PlayerInteractEvent.RightClickBlock event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (FreeEpicGames.RAID_WORLD.equals(event.getLevel())) {
                 GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
@@ -38,7 +37,7 @@ public class RaidEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (player.level().equals(FreeEpicGames.RAID_WORLD)) {
                 GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
@@ -48,11 +47,13 @@ public class RaidEventHandler {
                 } else {
                     Pair<String, Vec3> backPosInfo = agent.getBackPos(player);
                     ServerLevel level = FreeEpicGames.OVER_WORLD;
-                    if (player.getServer() != null) {
-                        level = player.getServer().getLevel(FreeEpicGamesKeys.parseWorldKey(backPosInfo.getA()));
-                    }
-                    if (level != null) {
-                        player.teleportTo(level, backPosInfo.getB().x, backPosInfo.getB().y, backPosInfo.getB().z, Collections.emptySet(), 0.0F, 0.0F);
+                    if (backPosInfo != null) {
+                        if (player.getServer() != null) {
+                            level = player.getServer().getLevel(FreeEpicGamesKeys.parseWorldKey(backPosInfo.getA()));
+                        }
+                        if (level != null) {
+                            player.teleportTo(level, backPosInfo.getB().x, backPosInfo.getB().y, backPosInfo.getB().z, Collections.emptySet(), 0.0F, 0.0F);
+                        }
                     }
                 }
             }
@@ -60,7 +61,7 @@ public class RaidEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
             RaidInstanceView view = agent.getRaidInstance(player);

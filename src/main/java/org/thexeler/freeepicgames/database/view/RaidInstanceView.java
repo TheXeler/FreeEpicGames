@@ -13,16 +13,21 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.Score;
+import net.minecraft.world.scores.Scoreboard;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.type.RaidType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.events.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -177,17 +182,21 @@ public class RaidInstanceView implements AbstractCacheView {
 
     public void removePlayer(ServerPlayer player) {
         if (player.getRespawnPosition() != null) {
-            this.removePlayer(player, player.getRespawnPosition());
+            removePlayer(player, player.getRespawnPosition());
         } else {
-            this.removePlayer(player, FreeEpicGames.OVER_WORLD.getSharedSpawnPos());
+            removePlayer(player, FreeEpicGames.OVER_WORLD.getSharedSpawnPos());
         }
     }
 
     public void removePlayer(ServerPlayer player, BlockPos pos) {
+        removePlayer(player, new Vec3(pos.getX(), pos.getY(), pos.getZ()));
+    }
+
+    public void removePlayer(ServerPlayer player, Vec3 pos) {
         playerInstanceMappings.remove(player.getStringUUID());
         playerCheckpointPosMap.remove(player.getStringUUID());
 
-        player.teleportTo(FreeEpicGames.OVER_WORLD, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), player.getYRot(), player.getXRot());
+        player.teleportTo(FreeEpicGames.OVER_WORLD, pos.x, pos.y, pos.z, Collections.emptySet(), player.getYRot(), player.getXRot());
     }
 
     @Nullable
@@ -235,8 +244,28 @@ public class RaidInstanceView implements AbstractCacheView {
 
     public void destroy() {
         if (isActive) {
-            // TODO: Destroy raid instance
-            isActive = false;
+            if (!NeoForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this)).isCanceled()) {
+                isActive = false;
+                GlobalRaidDataAgent.getInstance().removeRaidInstance(this);
+
+                playerBackPosMappings.forEach((u, v) -> {
+                    Player player = FreeEpicGames.RAID_WORLD.getPlayerByUUID(UUID.fromString(u));
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        if (frame.contains(serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ())) {
+                            removePlayer(serverPlayer);
+                        }
+                    }
+                });
+                playerInstanceMappings.forEach((u, v) -> {
+                    if (v.equals(this)) {
+                        playerInstanceMappings.remove(u);
+                    }
+                });
+
+                // TODO : clear chunk (or not?)
+
+                FreeEpicGames.LOGGER.info("Raid instance destroyed: {}", id);
+            }
         } else {
             FreeEpicGames.LOGGER.warn("Raid instance already inactive: {}", id);
         }

@@ -12,7 +12,6 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.PlayerTeam;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
@@ -24,12 +23,11 @@ import org.thexeler.freeepicgames.database.view.AreaView;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@EventBusSubscriber
 public class CaptureEventHandler {
-    private static int tickCount = 0;
+    private int tickCount = 0;
 
     @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
+    public void onServerTick(ServerTickEvent.Post event) {
         if (FreeEpicGamesConfigs.isEnabledCapture) {
             tickCount++;
             if (tickCount % FreeEpicGamesConfigs.captureTick == 0) {
@@ -91,7 +89,7 @@ public class CaptureEventHandler {
     }
 
     @SubscribeEvent
-    public static void onProjectileImpact(ProjectileImpactEvent event) {
+    public void onProjectileImpact(ProjectileImpactEvent event) {
         if (event.getProjectile() instanceof SpectralArrow arrow) {
             try (Level world = arrow.level()) {
                 if (world.isClientSide()) return;
@@ -120,7 +118,7 @@ public class CaptureEventHandler {
         }
     }
 
-    private static Entity createCannonShell(EntityType<?> cannonType, Level world, double x, double y, double z) {
+    private Entity createCannonShell(EntityType<?> cannonType, Level world, double x, double y, double z) {
         Entity entity = cannonType.create(world);
         if (entity != null) {
             CompoundTag fuze = new CompoundTag();
