@@ -2,11 +2,10 @@ package org.thexeler.freeepicgames.events;
 
 import lombok.Getter;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
-
-import java.util.List;
 
 public abstract class RaidEvent extends Event {
     // TODO
@@ -18,8 +17,8 @@ public abstract class RaidEvent extends Event {
         this.view = view;
     }
 
-    public static class CreateEvent extends RaidEvent {
-        public CreateEvent(RaidInstanceView view) {
+    public static class BuildEvent extends RaidEvent {
+        public BuildEvent(RaidInstanceView view) {
             super(view);
         }
     }
@@ -30,9 +29,16 @@ public abstract class RaidEvent extends Event {
         }
     }
 
-    public static class JoinEvent extends RaidEvent {
-        public JoinEvent(RaidInstanceView view, List<ServerPlayer> players) {
+    public static class OpenTreasureEvent extends RaidEvent implements ICancellableEvent {
+        @Getter
+        private final Container container;
+        @Getter
+        private final ServerPlayer player;
+
+        public OpenTreasureEvent(RaidInstanceView view, Container container, ServerPlayer player) {
             super(view);
+            this.container = container;
+            this.player = player;
         }
     }
 

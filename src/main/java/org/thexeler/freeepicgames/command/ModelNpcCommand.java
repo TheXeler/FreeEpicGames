@@ -2,11 +2,11 @@ package org.thexeler.freeepicgames.command;
 
 import net.minecraft.world.entity.Entity;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
-import org.thexeler.freeepicgames.command.lamp.annotations.RequiresOP;
-import org.thexeler.freeepicgames.command.lamp.annotations.WithNpc;
-import org.thexeler.freeepicgames.command.lamp.annotations.WithNpcType;
-import org.thexeler.freeepicgames.command.lamp.parameters.EntitySelectorList;
+import org.thexeler.lamp.actor.ForgeCommandActor;
+import org.thexeler.lamp.annotations.RequiresOP;
+import org.thexeler.lamp.annotations.WithNpc;
+import org.thexeler.lamp.annotations.WithNpcType;
+import org.thexeler.lamp.parameters.EntitySelectorList;
 import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
 import org.thexeler.freeepicgames.database.type.NpcType;
 import org.thexeler.freeepicgames.database.view.NpcView;

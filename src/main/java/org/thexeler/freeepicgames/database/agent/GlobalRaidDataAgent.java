@@ -4,12 +4,14 @@ import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.database.type.RaidType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 import org.thexeler.freeepicgames.database.untils.ModSavedData;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.events.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -46,10 +48,10 @@ public class GlobalRaidDataAgent extends AbstractDataAgent {
         RaidInstanceView raidInstanceView = null;
         if (type != null) {
             String uuid = UUID.randomUUID().toString();
-
             raidInstanceView = new RaidInstanceView(uuid, type, locateEmptyChunk(type));
 
             raidInstanceView.build();
+            NeoForge.EVENT_BUS.post(new RaidEvent.BuildEvent(raidInstanceView));
 
             raidInstances.put(uuid, raidInstanceView);
         }

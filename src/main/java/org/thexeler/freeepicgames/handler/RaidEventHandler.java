@@ -2,17 +2,22 @@ package org.thexeler.freeepicgames.handler;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesKeys;
+import org.thexeler.freeepicgames.FreeEpicGamesUtils;
 import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.events.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.Collections;
@@ -28,8 +33,14 @@ public class RaidEventHandler {
                 if (view != null) {
                     RaidTreasureType treasure = view.getTreasureType(event.getPos());
                     if (treasure != null) {
-                        player.openMenu(view.getMenuProvider(player, event.getPos()));
-                        event.setCanceled(true);
+                        if (!NeoForge.EVENT_BUS.post(new RaidEvent.OpenTreasureEvent(
+                                view, view.getTreasureContainer(player, event.getPos()), player)).isCanceled()) {
+                            Container container = view.getTreasureContainer(player, event.getPos());
+                            MenuProvider provider = FreeEpicGamesUtils.ChestInterfaceHelper.
+                                    getMenuProvider(container, treasure.getTitle());
+                            player.openMenu(provider);
+                            event.setCanceled(true);
+                        }
                     }
                 }
             }
@@ -69,5 +80,13 @@ public class RaidEventHandler {
                 view.respawn(player);
             }
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onRaidTick(ServerTickEvent.Post event) {
+        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        agent.getAllRaidInstance().forEach(view -> {
+            NeoForge.EVENT_BUS.post(new RaidEvent.TickEvent(view));
+        });
     }
 }

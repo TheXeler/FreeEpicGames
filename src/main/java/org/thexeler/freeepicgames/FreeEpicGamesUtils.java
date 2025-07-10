@@ -3,6 +3,7 @@ package org.thexeler.freeepicgames;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
 
@@ -11,6 +12,20 @@ public class FreeEpicGamesUtils {
         public static void openVirtualChest(ServerPlayer player, Container container) {
             openVirtualChest(player, container, "");
         }
+
+        public static MenuProvider getMenuProvider(Container container) {
+            return getMenuProvider(container, "");
+        }
+
+        public static MenuProvider getMenuProvider(Container container, String title) {
+            return getMenuProvider(container, Component.literal(title));
+        }
+
+        public static MenuProvider getMenuProvider(Container container, Component title) {
+            return new SimpleMenuProvider((ci, i, p) ->
+                    ChestMenu.threeRows(ci, i, container), title);
+        }
+
 
         // TODO:Listener
         public static void openVirtualChest(ServerPlayer player, Container container, String title) {

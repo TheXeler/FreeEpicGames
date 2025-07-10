@@ -44,6 +44,7 @@ public class JobType {
 
     public void removeItem(ItemStack stack) {
         Item item = stack.getItem();
+
         Tag nbt = DataUtils.encodeForTag(DataComponentPatch.CODEC, stack.getComponentsPatch());
         if (nbt == null) {
             nbt = new CompoundTag();

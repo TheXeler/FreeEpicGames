@@ -18,7 +18,7 @@ import org.thexeler.freeepicgames.events.NpcEvent;
 
 public class NpcEventHandler {
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEntityDeath(LivingDeathEvent event) {
         NpcView source = NpcView.getEntity(event.getSource().getEntity());
         if (source != null) {
@@ -45,7 +45,7 @@ public class NpcEventHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         NpcView entity = NpcView.getEntity(event.getTarget());
         if (entity != null) {
@@ -54,7 +54,7 @@ public class NpcEventHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEntityDamage(LivingIncomingDamageEvent event) {
         NpcView source = NpcView.getEntity(event.getSource().getEntity());
         if (source != null) {
@@ -74,7 +74,7 @@ public class NpcEventHandler {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEntityTick(ServerTickEvent.Post event) {
         event.getServer().getAllLevels().forEach(serverLevel -> {
             WorldNpcDataAgent agent = WorldNpcDataAgent.getInstance(serverLevel);
@@ -87,7 +87,7 @@ public class NpcEventHandler {
         });
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onProjectileFire(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Projectile projectile) {
             NpcView view = NpcView.getEntity(projectile.getOwner());
@@ -98,7 +98,7 @@ public class NpcEventHandler {
     }
 
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onProjectileImpact(ProjectileImpactEvent event) {
         Entity entity = event.getProjectile().getOwner();
         if (entity != null) {

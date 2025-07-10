@@ -8,8 +8,8 @@ import org.thexeler.freeepicgames.command.ModelCaptureCommand;
 import org.thexeler.freeepicgames.command.ModelJobCommand;
 import org.thexeler.freeepicgames.command.ModelNpcCommand;
 import org.thexeler.freeepicgames.command.ModelRaidCommand;
-import org.thexeler.freeepicgames.command.lamp.ForgeLamp;
-import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
+import org.thexeler.lamp.ForgeLamp;
+import org.thexeler.lamp.actor.ForgeCommandActor;
 import revxrsal.commands.Lamp;
 
 @EventBusSubscriber
@@ -17,7 +17,7 @@ public class CommandEventHandler {
 
     @SubscribeEvent
     public void onCommandsRegister(RegisterCommandsEvent event) {
-        Lamp<ForgeCommandActor> lamp = ForgeLamp.builder(event).build();
+        Lamp<ForgeCommandActor> lamp = ForgeLamp.builder(event.getDispatcher()).build();
         lamp.register(new ModelNpcCommand());
         if (FreeEpicGamesConfigs.isEnabledRaid) {
             lamp.register(new ModelRaidCommand());

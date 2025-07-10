@@ -7,19 +7,13 @@ import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Score;
-import net.minecraft.world.scores.Scoreboard;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
@@ -135,20 +129,17 @@ public class RaidInstanceView implements AbstractCacheView {
         this.blockPosOffset = new BlockPos(startChunk.getMinBlockX(), 0, startChunk.getMinBlockZ());
     }
 
-    public MenuProvider getMenuProvider(ServerPlayer player, BlockPos blockPos) {
+    public Container getTreasureContainer(ServerPlayer player, BlockPos blockPos) {
         RaidTreasureType treasure = baseType.getTreasureType(blockPos.subtract(blockPosOffset));
         Map<BlockPos, Container> actualMap = treasure.isPlayerOwn() ?
                 sharedTreasuresMap :
                 playerTreasuresMap.computeIfAbsent(player.getStringUUID(), p -> new HashMap<>());
 
-        return new SimpleMenuProvider((ci, i, p) -> {
-            Container container = actualMap.computeIfAbsent(blockPos, bp -> {
-                Container simpleContainer = new SimpleContainer(27);
-                treasure.generator(simpleContainer);
-                return simpleContainer;
-            });
-            return ChestMenu.threeRows(ci, i, container);
-        }, Component.literal(treasure.getTitle()));
+        return actualMap.computeIfAbsent(blockPos, bp -> {
+            Container simpleContainer = new SimpleContainer(27);
+            treasure.generator(simpleContainer);
+            return simpleContainer;
+        });
     }
 
     public boolean isInside(Vec3 pos) {
