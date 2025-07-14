@@ -3,10 +3,8 @@ package org.thexeler.freeepicgames.database.type;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
@@ -35,32 +33,33 @@ public class ChestMenuType {
     }
 
     public JsonObject toJson() {
-        JsonObject jobData = new JsonObject();
+        JsonObject menuData = new JsonObject();
 
-        jobData.add("items", new JsonArray());
+        menuData.addProperty("size", size);
+
+        menuData.add("items", new JsonArray());
         items.forEach((item, itemCmd) -> {
             JsonObject specialObject = DataUtils.fromItemStack(item);
             specialObject.addProperty("command", itemCmd);
-            jobData.getAsJsonArray("items").add(specialObject);
+            menuData.getAsJsonArray("items").add(specialObject);
         });
 
-        return jobData;
+        return menuData;
     }
 
     public static boolean register(String name, JsonObject object) {
         if (!types.containsKey(name)) {
-            Map<Item, Map<CompoundTag, Integer>> items = Collections.synchronizedMap(new HashMap<>());
+            Map<ItemStack, String> items = Collections.synchronizedMap(new HashMap<>());
             JsonArray itemsJson = DataUtils.getValue(object, "items", new JsonArray());
             itemsJson.asList().forEach(element -> {
                 ItemStack stack = DataUtils.toItemStack(element.getAsJsonObject());
-                items.computeIfAbsent(stack.getItem(),
-                                i -> Collections.synchronizedMap(new HashMap<>())).
-                        put(stack.serializeNBT(), stack.getCount());
+                items.computeIfAbsent(stack, i ->
+                        DataUtils.getValue(element.getAsJsonObject(), "command", ""));
             });
-            types.put(name, new ChestMenuType(name, items));
+            types.put(name, new ChestMenuType(name, DataUtils.getValue(object, "size", 27), items));
             return true;
         } else {
-            FreeEpicGames.LOGGER.error("Repeated registration key : " + name);
+            FreeEpicGames.LOGGER.error("Repeated registration key : {}", name);
         }
         return false;
     }
@@ -87,18 +86,18 @@ public class ChestMenuType {
     }
 
     public static void init() {
-        FreeEpicGames.LOGGER.info("Registering JobTypes...");
-        DataUtils.getPackAllData(DataPacket.JOB_TYPE).forEach(ChestMenuType::register);
-        FreeEpicGames.LOGGER.info("Registered {} JobTypes.", types.size());
+        FreeEpicGames.LOGGER.info("Registering ChestMenuTypes...");
+        DataUtils.getPackAllData(DataPacket.CHEST_MENU_TYPE).forEach(ChestMenuType::register);
+        FreeEpicGames.LOGGER.info("Registered {} ChestMenuTypes.", types.size());
     }
 
     public static void expire() {
-        FreeEpicGames.LOGGER.info("Saving JobTypes...");
+        FreeEpicGames.LOGGER.info("Saving ChestMenuTypes...");
         Map<String, JsonObject> jsonMap = new HashMap<>();
         types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
-        DataUtils.savePacketAllData(DataPacket.JOB_TYPE, jsonMap);
-        FreeEpicGames.LOGGER.info("Expiring JobTypes...");
+        FreeEpicGames.LOGGER.info("Expiring ChestMenuTypes...");
+        DataUtils.savePacketAllData(DataPacket.CHEST_MENU_TYPE, jsonMap);
         types.clear();
-        FreeEpicGames.LOGGER.info("Expired JobTypes.");
+        FreeEpicGames.LOGGER.info("Expired ChestMenuTypes.");
     }
 }

@@ -6,5 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class FreeEpicGamesKeys {
-    public static ResourceKey<Level> RAID_WORLD_KEY = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("freeepicgames", "raid_dim"));
+    public static ResourceKey<Level> RAID_WORLD_KEY = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(FreeEpicGames.MOD_ID, "raid_dim"));
+
+    public static ResourceKey<Level> parseWorldKey(String res) {
+        return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(res));
+    }
 }

@@ -22,6 +22,9 @@ public class FreeEpicGamesPaths {
     public static final Path RAID_TREASURE_DIRECTORS = makeSureExist(RAID_DIRECTORS.resolve("treasure"));
     public static final Path RAID_TREASURE_TYPE_DIR = makeSureExist(RAID_TREASURE_DIRECTORS.resolve("list"));
 
+    public static final Path CHEST_DIRECTORS = makeSureExist(ROOT_DIRECTORS.resolve("chest"));
+    public static final Path CHEST_MENU_TYPE_DIR = makeSureExist(CHEST_DIRECTORS.resolve("menu"));
+
     public static Path makeSureExist(Path path) {
         try {
             if (!Files.exists(path)) {

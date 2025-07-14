@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -18,9 +19,9 @@ public class JobType {
 
     @Getter
     private final String name;
-    private final Map<Item, Map<CompoundTag, Integer>> jobItems;
+    private final Map<Item, Map<Tag, Integer>> jobItems;
 
-    public JobType(String name, Map<Item, Map<CompoundTag, Integer>> jobItems) {
+    public JobType(String name, Map<Item, Map<Tag, Integer>> jobItems) {
         this.name = name;
         this.jobItems = jobItems;
     }
@@ -35,14 +36,14 @@ public class JobType {
         if (nbt == null) {
             nbt = new CompoundTag();
         }
-        Map<CompoundTag, Integer> itemInfo = jobItems.computeIfAbsent(item,
+        Map<Tag, Integer> itemInfo = jobItems.computeIfAbsent(item,
                 k -> Collections.synchronizedMap(new HashMap<>()));
         itemInfo.put(nbt, num);
     }
 
     public void removeItem(ItemStack stack) {
         Item item = stack.getItem();
-        CompoundTag nbt = stack.getTag();
+        Tag nbt = DataUtils.encodeForTag(CompoundTag.CODEC, stack.serializeNBT());
         if (nbt == null) {
             nbt = new CompoundTag();
         }
@@ -58,7 +59,8 @@ public class JobType {
         List<ItemStack> itemStacks = new ArrayList<>();
         if (jobItems != null && !jobItems.isEmpty()) {
             jobItems.forEach((item, value) ->
-                    value.forEach((nbt, count) -> itemStacks.add(DataUtils.toItemStack(item, count, nbt))));
+                    value.forEach((nbt, count) ->
+                            itemStacks.add(DataUtils.toItemStack(item, count, DataUtils.decode(CompoundTag.CODEC, nbt)))));
         }
         return itemStacks;
     }
@@ -69,20 +71,20 @@ public class JobType {
         jobData.add("items", new JsonArray());
         jobItems.forEach((item, itemInfo) ->
                 itemInfo.forEach((nbt, num) ->
-                        jobData.getAsJsonArray("items").add(DataUtils.fromItemStack(item, num, nbt))));
+                        jobData.getAsJsonArray("items").add(DataUtils.fromItemStack(item, num, DataUtils.decode(CompoundTag.CODEC, nbt)))));
 
         return jobData;
     }
 
     public static boolean register(String name, JsonObject object) {
         if (!types.containsKey(name)) {
-            Map<Item, Map<CompoundTag, Integer>> items = Collections.synchronizedMap(new HashMap<>());
+            Map<Item, Map<Tag, Integer>> items = Collections.synchronizedMap(new HashMap<>());
             JsonArray itemsJson = DataUtils.getValue(object, "items", new JsonArray());
             itemsJson.asList().forEach(element -> {
                 ItemStack stack = DataUtils.toItemStack(element.getAsJsonObject());
                 items.computeIfAbsent(stack.getItem(),
                                 i -> Collections.synchronizedMap(new HashMap<>())).
-                        put(stack.serializeNBT(), stack.getCount());
+                        put(DataUtils.encodeForTag(CompoundTag.CODEC, stack.serializeNBT()), stack.getCount());
             });
             types.put(name, new JobType(name, items));
             return true;

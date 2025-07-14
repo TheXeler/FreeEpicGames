@@ -1,5 +1,6 @@
 package org.thexeler.freeepicgames.handler;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +14,7 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
@@ -25,17 +24,16 @@ import org.thexeler.freeepicgames.database.view.AreaView;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Mod.EventBusSubscriber
 public class CaptureEventHandler {
-    private static int tickCount = 0;
+    private int tickCount = 0;
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
+    public void onServerTick(TickEvent.ServerTickEvent event) {
         if (FreeEpicGamesConfigs.isEnabledCapture) {
             tickCount++;
             if (tickCount % FreeEpicGamesConfigs.captureTick == 0) {
                 tickCount -= FreeEpicGamesConfigs.captureTick;
-                ServerLifecycleHooks.getCurrentServer().getAllLevels().forEach(serverLevel -> {
+                event.getServer().getAllLevels().forEach(serverLevel -> {
                     WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(serverLevel);
                     String attackerName = agent.getAttacker();
                     String defenderName = agent.getDefender();
@@ -92,7 +90,7 @@ public class CaptureEventHandler {
     }
 
     @SubscribeEvent
-    public static void onProjectileImpact(ProjectileImpactEvent event) {
+    public void onProjectileImpact(ProjectileImpactEvent event) {
         if (event.getProjectile() instanceof SpectralArrow arrow) {
             try (Level world = arrow.level()) {
                 if (world.isClientSide()) return;
@@ -102,36 +100,32 @@ public class CaptureEventHandler {
 
                 String uuid = arrow.getOwner().getStringUUID();
                 if (uuid.equals(agent.getAttackerCommander()) || uuid.equals(agent.getDefenderCommander())) {
-                    if (cannonType != null) {
-                        Random random = new Random();
+                    Random random = new Random();
+                    createCannonShell(cannonType, world,
+                            arrow.getBlockX(),
+                            arrow.getBlockY() + 100.0,
+                            arrow.getBlockZ());
+                    int i = 0;
+                    while (i++ < 80) {
                         createCannonShell(cannonType, world,
-                                arrow.getBlockX(),
-                                arrow.getBlockY() + 100.0,
-                                arrow.getBlockZ());
-                        int i = 0;
-                        while (i++ < 80) {
-                            createCannonShell(cannonType, world,
-                                    arrow.getBlockX() + random.nextDouble(-20.0, 20),
-                                    arrow.getBlockY() + 300.0 + (i * 20.0),
-                                    arrow.getBlockZ() + random.nextDouble(-20.0, 20));
-                        }
-                        arrow.discard();
+                                arrow.getBlockX() + random.nextDouble(-20.0, 20),
+                                arrow.getBlockY() + 300.0 + (i * 20.0),
+                                arrow.getBlockZ() + random.nextDouble(-20.0, 20));
                     }
+                    arrow.discard();
                 }
             } catch (Exception ignored) {
             }
         }
     }
 
-    private static Entity createCannonShell(EntityType<?> cannonType, Level world, double x, double y, double z) {
+    private Entity createCannonShell(EntityType<?> cannonType, Level world, double x, double y, double z) {
         Entity entity = cannonType.create(world);
         if (entity != null) {
-            CompoundTag tag = entity.serializeNBT();
             CompoundTag fuze = new CompoundTag();
             fuze.putInt("Count", 1);
             fuze.putString("id", "createbigcannons:impact_fuze");
-            tag.put("Fuze", fuze);
-            entity.deserializeNBT(tag);
+            entity.getPersistentData().put("Fuze", fuze);
             entity.setPos(x, y, z);
             world.addFreshEntity(entity);
         } else {

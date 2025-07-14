@@ -6,10 +6,11 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.thexeler.freeepicgames.command.lamp.actor.ForgeCommandActor;
-import org.thexeler.freeepicgames.command.lamp.annotations.RequiresOP;
-import org.thexeler.freeepicgames.command.lamp.annotations.WithJobType;
-import org.thexeler.freeepicgames.command.lamp.parameters.EntitySelectorList;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.thexeler.lamp.actor.ForgeCommandActor;
+import org.thexeler.lamp.annotations.RequiresOP;
+import org.thexeler.lamp.annotations.WithJobType;
+import org.thexeler.lamp.parameters.EntitySelectorList;
 import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
 import org.thexeler.freeepicgames.database.type.JobType;
 import revxrsal.commands.annotation.Command;
@@ -24,8 +25,8 @@ public class ModelJobCommand {
 
     @CommandPlaceholder
     @RequiresOP
-    @Subcommand("class create <name>")
-    public void commandCreateJob(ForgeCommandActor actor, String name) {
+    @Subcommand("job create <name>")
+    public void jobCreate(ForgeCommandActor actor, String name) {
         if (JobType.register(name, new JsonObject())) {
             actor.reply("成功创建职业" + name);
         } else {
@@ -36,7 +37,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job delete <name>")
-    public void commandDeleteJob(ForgeCommandActor actor, @WithJobType String name) {
+    public void jobDelete(ForgeCommandActor actor, @WithJobType String name) {
         if (JobType.unregister(name)) {
             actor.reply("成功删除职业" + name);
         } else {
@@ -47,7 +48,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job remove <name>")
-    public void commandRemoveItem(ForgeCommandActor sender, @WithJobType String name) {
+    public void jobRemove(ForgeCommandActor sender, @WithJobType String name) {
         ServerPlayer senderPlayer = sender.requirePlayer();
         if (senderPlayer != null) {
             JobType type = JobType.getType(name);
@@ -63,7 +64,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job set <name>")
-    public void commandSetItem(ForgeCommandActor sender, @WithJobType String name) {
+    public void jobSet(ForgeCommandActor sender, @WithJobType String name) {
         ServerPlayer senderPlayer = sender.requirePlayer();
         if (senderPlayer != null) {
             ItemStack stack = senderPlayer.getMainHandItem();
@@ -86,7 +87,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job set <name> <num>")
-    public void commandSetItemNum(ForgeCommandActor sender, @WithJobType String name, int num) {
+    public void jobSet(ForgeCommandActor sender, @WithJobType String name, int num) {
         ServerPlayer senderPlayer = sender.requirePlayer();
         if (senderPlayer != null) {
             ItemStack stack = senderPlayer.getMainHandItem();
@@ -109,7 +110,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job list")
-    public void commandJobsList(ForgeCommandActor sender) {
+    public void listJob(ForgeCommandActor sender) {
         List<String> jobs = JobType.getAllTypeName();
         StringBuilder message = new StringBuilder("————————共计" + jobs.size() + "个职业————————\n");
         jobs.forEach(value -> message.append(value).append("\n"));
@@ -120,7 +121,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("player get <player>")
-    public void commandGetPlayerJob(ForgeCommandActor sender, ServerPlayer player) {
+    public void playerGet(ForgeCommandActor sender, ServerPlayer player) {
         GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
         sender.reply("玩家" + player.getDisplayName() + "的职业为:" + agent.getPlayerJob(player));
     }
@@ -128,7 +129,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("player set <player> <name>")
-    public void commandSetPlayerJob(ForgeCommandActor sender, ServerPlayer player, @WithJobType String name) {
+    public void playerSet(ForgeCommandActor sender, ServerPlayer player, @WithJobType String name) {
         GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
         if (agent.setPlayerJob(player, name)) {
             sender.reply("玩家" + player.getDisplayName().getString() + "已被设置为" + name);
@@ -140,7 +141,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("player set <selector> <name>")
-    public void commandSetPlayerClass(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector, @WithJobType String name) {
+    public void playerSet(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector, @WithJobType String name) {
         GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
         selector.stream().filter(entity -> entity instanceof ServerPlayer).forEach(player -> {
                     if (agent.setPlayerJob(player, name)) {
@@ -155,7 +156,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("player refresh <player>")
-    public void commandRefreshPlayer(ForgeCommandActor sender, ServerPlayer player) {
+    public void playerRefresh(ForgeCommandActor sender, ServerPlayer player) {
         GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
         JobType type = JobType.getType(agent.getPlayerJob(player));
         player.getInventory().clearContent();
@@ -168,7 +169,7 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("player refresh <selector>")
-    public void commandRefreshPlayer(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector) {
+    public void playerRefresh(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector) {
         GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
         selector.stream().filter(entity -> entity instanceof ServerPlayer).forEach(player -> {
                     JobType type = JobType.getType(agent.getPlayerJob(player));
@@ -184,19 +185,29 @@ public class ModelJobCommand {
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("bind <command>")
-    public void commandBindCommand(ForgeCommandActor sender, String command) {
+    public void bind(ForgeCommandActor sender, String command) {
         ServerPlayer player = sender.requirePlayer();
         if (player != null) {
             ItemStack stack = player.getMainHandItem();
             if (!stack.is(Items.AIR)) {
-                CompoundTag tag = stack.getTag();
-                if (tag == null) tag = new CompoundTag();
-                tag.put("CustomCommand", StringTag.valueOf(command));
-                stack.setTag(tag);
+                CompoundTag data = stack.getTag();
+                if (data == null) data = new CompoundTag();
+                data.put("custom_command", StringTag.valueOf(command));
+                stack.setTag(data);
                 sender.reply("命令绑定成功");
             } else {
                 sender.reply("绑定失败:目标物品为空");
             }
         }
+    }
+
+    @CommandPlaceholder
+    @RequiresOP
+    @Subcommand("reload")
+    public void reload(ForgeCommandActor sender) {
+        sender.reply("正在重载配置文件...");
+        JobType.expire();
+        JobType.init();
+        sender.reply("配置文件重载完成");
     }
 }

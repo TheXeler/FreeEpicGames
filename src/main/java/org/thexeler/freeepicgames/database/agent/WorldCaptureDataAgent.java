@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldCaptureDataAgent implements AbstractDataAgent {
+public class WorldCaptureDataAgent extends AbstractDataAgent {
     private static final Map<ServerLevel, WorldCaptureDataAgent> instances = new HashMap<>();
     private final JsonObject optionData;
     private final JsonObject areasData;
@@ -144,5 +144,9 @@ public class WorldCaptureDataAgent implements AbstractDataAgent {
 
         DataUtils.computeViewMap(areaViewMap, areasData);
         DataUtils.computeCacheViewMap(areaViewMap, areasCache);
+    }
+
+    public static void expire() {
+        instances.clear();
     }
 }

@@ -1,21 +1,25 @@
 package org.thexeler.freeepicgames.handler;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
+import org.thexeler.freeepicgames.FreeEpicGamesKeys;
 import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
 import org.thexeler.freeepicgames.database.type.RaidTreasureType;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import oshi.util.tuples.Pair;
 
-@Mod.EventBusSubscriber
+import java.util.Collections;
+
 public class RaidEventHandler {
 
     @SubscribeEvent
-    public static void onOpenContainer(PlayerInteractEvent.RightClickBlock event) {
+    public void onOpenContainer(PlayerInteractEvent.RightClickBlock event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (FreeEpicGames.RAID_WORLD.equals(event.getLevel())) {
                 GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
@@ -24,6 +28,7 @@ public class RaidEventHandler {
                     RaidTreasureType treasure = view.getTreasureType(event.getPos());
                     if (treasure != null) {
                         player.openMenu(view.getMenuProvider(player, event.getPos()));
+                        event.setCanceled(true);
                     }
                 }
             }
@@ -31,18 +36,31 @@ public class RaidEventHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
-            RaidInstanceView view = agent.getRaidInstance(player);
-            if (view != null) {
-                view.respawn(player);
+            if (player.level().equals(FreeEpicGames.RAID_WORLD)) {
+                GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+                RaidInstanceView view = agent.getRaidInstance(player);
+                if (view != null) {
+                    view.respawn(player);
+                } else {
+                    Pair<String, Vec3> backPosInfo = agent.getBackPos(player);
+                    ServerLevel level = FreeEpicGames.OVER_WORLD;
+                    if (backPosInfo != null) {
+                        if (player.getServer() != null) {
+                            level = player.getServer().getLevel(FreeEpicGamesKeys.parseWorldKey(backPosInfo.getA()));
+                        }
+                        if (level != null) {
+                            player.teleportTo(level, backPosInfo.getB().x, backPosInfo.getB().y, backPosInfo.getB().z, Collections.emptySet(), 0.0F, 0.0F);
+                        }
+                    }
+                }
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onPlayerDead(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
             RaidInstanceView view = agent.getRaidInstance(player);

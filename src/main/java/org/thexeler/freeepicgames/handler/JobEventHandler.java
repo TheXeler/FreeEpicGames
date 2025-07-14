@@ -1,36 +1,36 @@
 package org.thexeler.freeepicgames.handler;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
 import org.thexeler.freeepicgames.database.type.JobType;
 
-@Mod.EventBusSubscriber
 public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onPlayerDeath(LivingDeathEvent event) {
+    public void onPlayerDeath(LivingDeathEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
             player.getInventory().clearContent();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
             GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
             JobType type = JobType.getType(agent.getPlayerJob(player));
             if (type != null) {
                 type.getAllItems().forEach(stack -> {
-                    EquipmentSlot slot = ServerPlayer.getEquipmentSlotForItem(stack);
+                    EquipmentSlot slot = Player.getEquipmentSlotForItem(stack);
                     if (player.getItemBySlot(slot).isEmpty()) {
                         player.getInventory().add(stack);
                     } else {
@@ -54,10 +54,11 @@ public class JobEventHandler {
     }
 
     @SubscribeEvent
-    public static void onItemUse(LivingEntityUseItemEvent event) {
+    public void onItemUse(LivingEntityUseItemEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
-            if (event.getItem().getTag() != null) {
-                String customCommand = event.getItem().getTag().getCompound("CustomCommand").getAsString();
+            CompoundTag data = event.getItem().getTag();
+            if (data != null && data.contains("custom_command")) {
+                String customCommand = data.getString("custom_command");
                 if (!customCommand.isEmpty()) {
                     try {
                         player.server.getCommands().getDispatcher().execute(customCommand, player.server.createCommandSourceStack());

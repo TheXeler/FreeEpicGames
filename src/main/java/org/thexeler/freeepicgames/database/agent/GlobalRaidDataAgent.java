@@ -3,20 +3,21 @@ package org.thexeler.freeepicgames.database.agent;
 import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
 import org.thexeler.freeepicgames.database.type.RaidType;
 import org.thexeler.freeepicgames.database.untils.DataUtils;
 import org.thexeler.freeepicgames.database.untils.ModSavedData;
 import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import oshi.util.tuples.Pair;
 
 import java.util.*;
 
-public class GlobalRaidDataAgent implements AbstractDataAgent {
+public class GlobalRaidDataAgent extends AbstractDataAgent {
 
     private static GlobalRaidDataAgent instance;
 
-    // TODO
     private final JsonObject optionData;
     private final JsonObject raidInstanceData;
 
@@ -49,16 +50,23 @@ public class GlobalRaidDataAgent implements AbstractDataAgent {
             raidInstanceView = new RaidInstanceView(uuid, type, locateEmptyChunk(type));
 
             raidInstanceView.build();
-            // TODO
 
             raidInstances.put(uuid, raidInstanceView);
         }
         return raidInstanceView;
     }
 
+    public void removeRaidInstance(RaidInstanceView raidInstanceView) {
+        if (raidInstanceView.isActive()) {
+            raidInstanceView.destroy();
+        } else {
+            raidInstances.remove(raidInstanceView.getId());
+        }
+    }
+
     public ChunkPos locateEmptyChunk(RaidType type) {
         int posX, posZ, level = 0;
-        int sizeX = type.getSize().getX(), sizeZ = type.getSize().getZ();
+        int sizeX = type.getSizeX(), sizeZ = type.getSizeZ();
 
         while (true) {
             posX = 0;
@@ -101,6 +109,10 @@ public class GlobalRaidDataAgent implements AbstractDataAgent {
         }
     }
 
+    public Pair<String, Vec3> getBackPos(ServerPlayer player) {
+        return RaidInstanceView.getBackPos(player);
+    }
+
     public Collection<RaidInstanceView> getAllRaidInstance() {
         return raidInstances.values();
     }
@@ -128,5 +140,9 @@ public class GlobalRaidDataAgent implements AbstractDataAgent {
         if (FreeEpicGamesConfigs.isEnabledRaidCachePersistence) {
             DataUtils.computeCacheViewMap(raidInstances, raidInstanceData);
         }
+    }
+
+    public static void expire() {
+        instance = null;
     }
 }

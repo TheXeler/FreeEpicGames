@@ -1,12 +1,15 @@
 package org.thexeler.freeepicgames.database.untils;
 
 import com.google.gson.*;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.AirItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -34,6 +37,23 @@ import java.util.List;
 import java.util.Map;
 
 public class DataUtils {
+
+    public static <T> Tag encodeForTag(Codec<T> codec, T value) {
+        return codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow(false, msg -> FreeEpicGames.LOGGER.error("Can not encode to tag : {}", msg));
+    }
+
+    public static <T> JsonElement encodeForJson(Codec<T> codec, T value) {
+        return codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow(false, msg -> FreeEpicGames.LOGGER.error("Can not encode to json : {}", msg));
+    }
+
+    public static <T> T decode(Codec<T> codec, Tag tag) {
+        return codec.parse(NbtOps.INSTANCE, tag).getOrThrow(false, msg -> FreeEpicGames.LOGGER.error("Can not decode from tag : {}", msg));
+    }
+
+    public static <T> T decode(Codec<T> codec, JsonElement tag) {
+        return codec.parse(JsonOps.INSTANCE, tag).getOrThrow(false, msg -> FreeEpicGames.LOGGER.error("Can not decode from json : {}", msg));
+    }
+
     public static String getValue(JsonObject jsonObject, String key, String defaultValue) {
         if (jsonObject.get(key) == null) {
             jsonObject.addProperty(key, defaultValue);
@@ -143,21 +163,15 @@ public class DataUtils {
     }
 
     public static JsonObject fromItemStack(ItemStack itemStack) {
-        JsonObject json = new JsonObject();
-
-        json.addProperty("id", itemStack.getItem().toString());
-        json.addProperty("count", itemStack.getCount());
-        json.addProperty("nbt", itemStack.serializeNBT().toString());
-
-        return json;
+        return fromItemStack(itemStack.getItem(), itemStack.getCount(), itemStack.serializeNBT());
     }
 
-    public static JsonObject fromItemStack(Item item, int count, CompoundTag nbt) {
+    public static JsonObject fromItemStack(Item item, int count, CompoundTag patch) {
         JsonObject json = new JsonObject();
 
         json.addProperty("id", item.toString());
         json.addProperty("count", count);
-        json.addProperty("nbt", nbt.toString());
+        json.add("nbt", DataUtils.encodeForJson(CompoundTag.CODEC, patch));
 
         return json;
     }
@@ -165,24 +179,19 @@ public class DataUtils {
     public static ItemStack toItemStack(JsonObject json) {
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(json.get("id").getAsString()));
         ItemStack itemStack = null;
-        if (item != null) {
-            itemStack = new ItemStack(item, json.get("count").getAsInt());
-
-            try {
-                itemStack.deserializeNBT(TagParser.parseTag(json.get("nbt").getAsString()));
-            } catch (CommandSyntaxException ignored) {
-                FreeEpicGames.LOGGER.warn("Failed to parse NBT \"{}\" for item {}", json.get("nbt").getAsString(), json.get("id").getAsString());
-            }
-        } else {
+        if (item instanceof AirItem || item == null) {
             FreeEpicGames.LOGGER.warn("Item not found: {}", json.get("id").getAsString());
+        } else {
+            itemStack = new ItemStack(item, json.get("count").getAsInt());
+            itemStack.deserializeNBT(DataUtils.decode(CompoundTag.CODEC, json.get("nbt")));
         }
 
         return itemStack;
     }
 
-    public static ItemStack toItemStack(Item item, int count, CompoundTag nbt) {
+    public static ItemStack toItemStack(Item item, int count, CompoundTag patch) {
         ItemStack itemStack = new ItemStack(item, count);
-        itemStack.deserializeNBT(nbt);
+        itemStack.deserializeNBT(patch);
         return itemStack;
     }
 
