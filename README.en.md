@@ -1,6 +1,6 @@
 # 🎮 FreeEpicGames Mod
 
-#### FreeEpicGames is a Minecraft mod based on NeoForge, providing rich gameplay expansion features including job system, raid mechanics, and NPC interactions. It is suitable for building RPG-type servers or quest-driven gameplay experiences.
+#### FreeEpicGames is a Minecraft mod based on Forge/NeoForge, providing rich gameplay expansion features including job system, raid mechanics, and NPC interactions. It is suitable for building RPG-type servers or quest-driven gameplay experiences.
 
 ## 📦 Module Overview
 
