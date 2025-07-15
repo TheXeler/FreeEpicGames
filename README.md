@@ -1,6 +1,6 @@
 # 🎮 FreeEpicGames 模组
 
-#### FreeEpicGames 是一个基于 NeoForge 的 Minecraft 模组，提供丰富的游戏内容扩展功能，包括职业系统、副本机制、NPC 交互等。适用于构建 RPG 类型服务器或任务驱动型玩法。
+#### FreeEpicGames 是一个基于 Forge/NeoForge 的 Minecraft 模组，提供丰富的游戏内容扩展功能，包括职业系统、副本机制、NPC 交互等。适用于构建 RPG 类型服务器或任务驱动型玩法。
 
 ## 📦 功能模块简介
 
