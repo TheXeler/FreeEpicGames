@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonObject;
 

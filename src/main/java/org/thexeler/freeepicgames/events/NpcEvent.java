@@ -8,16 +8,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
+import org.thexeler.freeepicgames.storage.view.NpcView;
 import org.thexeler.slacker.events.ICancellableEvent;
-import org.thexeler.freeepicgames.database.view.NpcView;
 
 public abstract class NpcEvent extends Event {
     @Getter
-    private final Entity entity;
+    protected final Entity entity;
     @Getter
-    private final NpcView view;
+    protected final NpcView view;
 
     public NpcEvent(NpcView npc) {
         this.entity = npc.getOriginEntity();
@@ -40,8 +39,7 @@ public abstract class NpcEvent extends Event {
         }
     }
 
-    @Cancelable
-    public static class DeathEvent extends NpcEvent {
+    public static class DeathEvent extends NpcEvent implements ICancellableEvent {
         @Getter
         private final DamageSource source;
 

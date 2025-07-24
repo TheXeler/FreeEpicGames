@@ -2,31 +2,40 @@ package org.thexeler.freeepicgames;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
-import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
-import org.thexeler.freeepicgames.database.type.JobType;
-import org.thexeler.freeepicgames.database.type.NpcType;
-import org.thexeler.freeepicgames.database.type.RaidTreasureType;
-import org.thexeler.freeepicgames.database.type.RaidType;
-import org.thexeler.freeepicgames.database.untils.ModSavedData;
 import org.thexeler.freeepicgames.handler.CaptureEventHandler;
 import org.thexeler.freeepicgames.handler.JobEventHandler;
 import org.thexeler.freeepicgames.handler.NpcEventHandler;
 import org.thexeler.freeepicgames.handler.RaidEventHandler;
+import org.thexeler.freeepicgames.storage.agent.CaptureWorldDataAgent;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
+import org.thexeler.freeepicgames.storage.agent.NpcWorldDataAgent;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.type.JobType;
+import org.thexeler.freeepicgames.storage.type.NpcType;
+import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
+import org.thexeler.freeepicgames.storage.type.RaidType;
+import org.thexeler.freeepicgames.storage.utils.ModSavedData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Mod(FreeEpicGames.MOD_ID)
 public class FreeEpicGames {
@@ -49,6 +58,29 @@ public class FreeEpicGames {
         EVENT_LISTENER.add(new RaidEventHandler());
     }
 
+    @SubscribeEvent
+    public void onReloadListenerAdd(AddReloadListenerEvent event) {
+        event.addListener(new PreparableReloadListener() {
+            @Override
+            public @NotNull CompletableFuture<Void> reload(@NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller preparationsProfiler, @NotNull ProfilerFiller reloadProfiler, @NotNull Executor backgroundExecutor, @NotNull Executor gameExecutor) {
+                if (FreeEpicGamesConfigs.isEnabledJob) {
+                    JobType.expire(true);
+                    JobType.init();
+                }
+                if (FreeEpicGamesConfigs.isEnabledRaid) {
+                    RaidTreasureType.expire(true);
+                    RaidTreasureType.init();
+                    RaidType.expire(true);
+                    RaidType.init();
+                }
+                NpcType.expire(true);
+                NpcType.init();
+
+                return preparationBarrier.wait(CompletableFuture.completedFuture(null)).thenRunAsync(() -> LOGGER.info("配置文件重载完成"), gameExecutor);
+            }
+        });
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onOverWorldLoad(ServerStartedEvent event) {
         FreeEpicGames.RAID_WORLD = event.getServer().getLevel(FreeEpicGamesKeys.RAID_WORLD_KEY);
@@ -67,6 +99,11 @@ public class FreeEpicGames {
         EVENT_LISTENER.forEach(MinecraftForge.EVENT_BUS::register);
     }
 
+    @SubscribeEvent
+    public void onAddReloadListener(AddReloadListenerEvent event) {
+
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onOverWorldUnload(ServerStoppedEvent event) {
         FreeEpicGames.RAID_WORLD = null;
@@ -80,10 +117,10 @@ public class FreeEpicGames {
             RaidType.expire();
         }
         NpcType.expire();
-        WorldCaptureDataAgent.expire();
-        GlobalJobDataAgent.expire();
-        GlobalRaidDataAgent.expire();
-        WorldNpcDataAgent.expire();
+        CaptureWorldDataAgent.expire();
+        JobDataAgent.expire();
+        RaidDataAgent.expire();
+        NpcWorldDataAgent.expire();
 
         FreeEpicGames.SAVED_DATA = null;
 

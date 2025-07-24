@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -7,25 +7,21 @@ import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.slacker.SlackerForge;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.type.RaidTreasureType;
-import org.thexeler.freeepicgames.database.type.RaidType;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
 import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
+import org.thexeler.freeepicgames.storage.type.RaidType;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -133,20 +129,17 @@ public class RaidInstanceView implements AbstractCacheView {
         this.blockPosOffset = new BlockPos(startChunk.getMinBlockX(), 0, startChunk.getMinBlockZ());
     }
 
-    public MenuProvider getMenuProvider(ServerPlayer player, BlockPos blockPos) {
+    public Container getTreasureContainer(ServerPlayer player, BlockPos blockPos) {
         RaidTreasureType treasure = baseType.getTreasureType(blockPos.subtract(blockPosOffset));
         Map<BlockPos, Container> actualMap = treasure.isPlayerOwn() ?
                 sharedTreasuresMap :
                 playerTreasuresMap.computeIfAbsent(player.getStringUUID(), p -> new HashMap<>());
 
-        return new SimpleMenuProvider((ci, i, p) -> {
-            Container container = actualMap.computeIfAbsent(blockPos, bp -> {
-                Container simpleContainer = new SimpleContainer(27);
-                treasure.generator(simpleContainer);
-                return simpleContainer;
-            });
-            return ChestMenu.threeRows(ci, i, container);
-        }, Component.literal(treasure.getTitle()));
+        return actualMap.computeIfAbsent(blockPos, bp -> {
+            Container simpleContainer = new SimpleContainer(27);
+            treasure.generator(simpleContainer);
+            return simpleContainer;
+        });
     }
 
     public boolean isInside(Vec3 pos) {
@@ -170,7 +163,7 @@ public class RaidInstanceView implements AbstractCacheView {
     public void joinPlayer(ServerPlayer player, Vec3 checkpointPos) {
         playerInstanceMappings.put(player.getStringUUID(), this);
         playerBackPosMappings.put(player.getStringUUID(),
-                new Pair<>(player.level().dimension().toString(), new Vec3(player.getX(), player.getY(), player.getZ())));
+                new Pair<>(player.level().dimension().registry().toString(), new Vec3(player.getX(), player.getY(), player.getZ())));
         playerCheckpointPosMap.put(player.getStringUUID(), checkpointPos);
 
         if (!FreeEpicGames.RAID_WORLD.players().contains(player)) {
@@ -204,7 +197,7 @@ public class RaidInstanceView implements AbstractCacheView {
 
     @Nullable
     public static RaidInstanceView getRaidInstanceFromChunk(ChunkPos chunkPos) {
-        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        RaidDataAgent agent = RaidDataAgent.getInstance();
         AtomicReference<RaidInstanceView> ret = new AtomicReference<>(null);
         agent.getAllRaidInstance().forEach(view -> {
             if (view.isInside(new Vec3(chunkPos.getMiddleBlockX(), 0, chunkPos.getMiddleBlockZ()))) {
@@ -242,9 +235,9 @@ public class RaidInstanceView implements AbstractCacheView {
 
     public void destroy() {
         if (isActive) {
-            if (!SlackerForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this)).isCanceled()) {
+            if (!MinecraftForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this))) {
                 isActive = false;
-                GlobalRaidDataAgent.getInstance().removeRaidInstance(this);
+                RaidDataAgent.getInstance().removeRaidInstance(this);
 
                 playerBackPosMappings.forEach((u, v) -> {
                     Player player = FreeEpicGames.RAID_WORLD.getPlayerByUUID(UUID.fromString(u));

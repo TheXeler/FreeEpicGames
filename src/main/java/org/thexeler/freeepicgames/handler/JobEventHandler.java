@@ -4,7 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -12,8 +11,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
-import org.thexeler.freeepicgames.database.type.JobType;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
+import org.thexeler.freeepicgames.storage.type.JobType;
 
 public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -26,11 +25,11 @@ public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
-            GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+            JobDataAgent agent = JobDataAgent.getInstance();
             JobType type = JobType.getType(agent.getPlayerJob(player));
             if (type != null) {
                 type.getAllItems().forEach(stack -> {
-                    EquipmentSlot slot = Player.getEquipmentSlotForItem(stack);
+                    EquipmentSlot slot = player.getEquipmentSlotForItem(stack);
                     if (player.getItemBySlot(slot).isEmpty()) {
                         player.getInventory().add(stack);
                     } else {
@@ -56,7 +55,7 @@ public class JobEventHandler {
     @SubscribeEvent
     public void onItemUse(LivingEntityUseItemEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
-            CompoundTag data = event.getItem().getTag();
+            CompoundTag data = event.getItem().serializeNBT();
             if (data != null && data.contains("custom_command")) {
                 String customCommand = data.getString("custom_command");
                 if (!customCommand.isEmpty()) {

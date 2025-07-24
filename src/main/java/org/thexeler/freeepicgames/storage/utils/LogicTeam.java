@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.untils;
+package org.thexeler.freeepicgames.storage.utils;
 
 public enum LogicTeam {
     ATTACKER,

@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.type;
+package org.thexeler.freeepicgames.storage.type;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -8,8 +8,8 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.database.untils.DataPacket;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.DataPacket;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 
 import java.util.*;
 

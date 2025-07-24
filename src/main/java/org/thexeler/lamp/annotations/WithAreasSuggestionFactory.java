@@ -5,9 +5,9 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
+import org.thexeler.freeepicgames.storage.agent.CaptureWorldDataAgent;
+import org.thexeler.freeepicgames.storage.view.AreaView;
 import org.thexeler.lamp.actor.ForgeCommandActor;
-import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
-import org.thexeler.freeepicgames.database.view.AreaView;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.autocomplete.SuggestionProvider;
@@ -26,7 +26,7 @@ public enum WithAreasSuggestionFactory implements SuggestionProvider.Factory<For
             ServerPlayer player = context.actor().requirePlayer();
             ServerLevel world = (player != null) ? player.serverLevel() : FreeEpicGames.OVER_WORLD;
 
-            return WorldCaptureDataAgent.getInstance(world).getAllAreas().stream().map(AreaView::getName).toList();
+            return CaptureWorldDataAgent.getInstance(world).getAllAreas().stream().map(AreaView::getName).toList();
         };
     }
 }

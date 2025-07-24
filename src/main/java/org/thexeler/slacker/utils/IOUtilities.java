@@ -16,7 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.function.BiPredicate;
 
 public final class IOUtilities {
-    private static final String TEMP_FILE_SUFFIX = ".neoforge-tmp";
+    private static final String TEMP_FILE_SUFFIX = ".slacker-tmp";
     private static final OpenOption[] OPEN_OPTIONS = {
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING

@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.type;
+package org.thexeler.freeepicgames.storage.type;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,10 +13,10 @@ import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesPaths;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.untils.DataPacket;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
-import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.utils.DataPacket;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
+import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 import org.thexeler.slacker.utils.IOUtilities;
 
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class RaidType {
     }
 
     public RaidInstanceView create() {
-        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        RaidDataAgent agent = RaidDataAgent.getInstance();
         return agent.createRaidInstance(this);
     }
 
@@ -200,10 +200,16 @@ public class RaidType {
     }
 
     public static void expire() {
-        FreeEpicGames.LOGGER.info("Saving RaidTypes...");
-        Map<String, JsonObject> jsonMap = new HashMap<>();
-        types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
-        DataUtils.savePacketAllData(DataPacket.RAID_TEMPLATE, jsonMap);
+        expire(false);
+    }
+
+    public static void expire(boolean forced) {
+        if (!forced) {
+            FreeEpicGames.LOGGER.info("Saving RaidTypes...");
+            Map<String, JsonObject> jsonMap = new HashMap<>();
+            types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
+            DataUtils.savePacketAllData(DataPacket.RAID_TEMPLATE, jsonMap);
+        }
         FreeEpicGames.LOGGER.info("Expiring RaidTypes...");
         types.clear();
         FreeEpicGames.LOGGER.info("Expired RaidTypes.");

@@ -1,9 +1,6 @@
 package org.thexeler.freeepicgames;
 
-import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -22,6 +19,8 @@ public class FreeEpicGamesConfigs {
     private static final ForgeConfigSpec.BooleanValue ENABLED_RAID = BUILDER.comment("Enabled raid module.").define("EnabledRaid", true);
     private static final ForgeConfigSpec.BooleanValue ENABLED_RAID_PERSISTENCE = BUILDER.comment("Persistence raid cache.").define("EnabledRaidPersistence", true);
 
+    private static final ForgeConfigSpec.BooleanValue ENABLED_CHEST_MENU_POST_EVENT_BUS = BUILDER.comment("Enabled chest menu post event bus.").define("EnabledChestMenuPostEventBus", false);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static boolean isEnabledCapture;
@@ -34,8 +33,10 @@ public class FreeEpicGamesConfigs {
     public static boolean isEnabledRaid;
     public static boolean isEnabledRaidCachePersistence;
 
+    public static boolean isEnabledChestMenuPostEventBus;
+
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
+    static void onLoad(final ModConfigEvent.Loading event) {
         isEnabledCapture = ENABLED_CAPTURE.get();
         isEnabledCaptureCachePersistence = ENABLED_CAPTURE_PERSISTENCE.get();
         captureTick = CAPTURE_TICK.get();
@@ -45,5 +46,7 @@ public class FreeEpicGamesConfigs {
 
         isEnabledRaid = ENABLED_RAID.get();
         isEnabledRaidCachePersistence = ENABLED_RAID_PERSISTENCE.get();
+
+        isEnabledChestMenuPostEventBus = ENABLED_CHEST_MENU_POST_EVENT_BUS.get();
     }
 }
