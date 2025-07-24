@@ -1,20 +1,19 @@
-package org.thexeler.freeepicgames.database.untils;
+package org.thexeler.freeepicgames.storage.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.world.level.Level;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
-import org.thexeler.freeepicgames.database.agent.AbstractDataAgent;
-import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
+import org.thexeler.freeepicgames.storage.agent.AbstractWorldDataAgent;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ModSavedData extends SavedData {
 
@@ -23,11 +22,10 @@ public class ModSavedData extends SavedData {
     private final Map<String, JsonObject> globalDataMap = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, Map<String, JsonObject>> worldDataMap = Collections.synchronizedMap(new HashMap<>());
 
-    private final Map<String, AbstractDataAgent> worldAgentMap = Collections.synchronizedMap(new HashMap<>());
+    private final List<AbstractWorldDataAgent> worldAgentList = Collections.synchronizedList(new ArrayList<>());
 
     private ModSavedData() {
         super();
-
         instance = this;
     }
 
@@ -35,9 +33,15 @@ public class ModSavedData extends SavedData {
         return instance.globalDataMap.computeIfAbsent(id, key -> new JsonObject());
     }
 
-    public static JsonObject getWorldData(Level world, String id) {
+    public static JsonObject getWorldData(ServerLevel world, String id) {
         return instance.worldDataMap.computeIfAbsent(world.dimension().toString(), key -> Collections.synchronizedMap(
                 new HashMap<>())).computeIfAbsent(id, key -> new JsonObject());
+    }
+
+    public static void register(@NotNull AbstractWorldDataAgent agent) {
+        if (!instance.worldAgentList.contains(agent)) {
+            instance.worldAgentList.add(agent);
+        }
     }
 
     public static ModSavedData create() {
@@ -47,11 +51,17 @@ public class ModSavedData extends SavedData {
     public static ModSavedData load(CompoundTag compoundTag, HolderLookup.Provider lookupProvider) {
         Gson gson = new Gson();
         ModSavedData savedData = create();
+
         CompoundTag globalTag = compoundTag.getCompound("Global");
         CompoundTag worldsTag = compoundTag.getCompound("Worlds");
 
         if (!globalTag.isEmpty()) {
-            globalTag.getAllKeys().forEach(key -> savedData.globalDataMap.put(key, gson.fromJson(globalTag.get(key).getAsString(), JsonObject.class)));
+            globalTag.getAllKeys().forEach(key -> {
+                Tag tag = globalTag.get(key);
+                if (tag instanceof StringTag) {
+                    savedData.globalDataMap.put(key, gson.fromJson(tag.getAsString(), JsonObject.class));
+                }
+            });
         }
 
         if (!worldsTag.isEmpty()) {
@@ -60,20 +70,26 @@ public class ModSavedData extends SavedData {
                 CompoundTag worldTag = worldsTag.getCompound(key);
 
                 if (!worldTag.isEmpty()) {
-                    worldTag.getAllKeys().forEach(key2 -> worldData.put(key2, gson.fromJson(worldTag.get(key2).getAsString(), JsonObject.class)));
+                    worldTag.getAllKeys().forEach(key2 -> {
+                        Tag tag = worldTag.get(key2);
+                        if (tag instanceof StringTag) {
+                            worldData.put(key2, gson.fromJson(tag.getAsString(), JsonObject.class));
+                        }
+                    });
                 }
                 savedData.worldDataMap.put(key, worldData);
             });
         }
+
         return savedData;
     }
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag, @NotNull HolderLookup.Provider registries) {
-        GlobalJobDataAgent.getInstance().save();
-        GlobalRaidDataAgent.getInstance().save();
+        JobDataAgent.getInstance().save();
+        RaidDataAgent.getInstance().save();
 
-        worldAgentMap.forEach((key, value) -> value.save());
+        worldAgentList.forEach(AbstractWorldDataAgent::save);
 
         Gson gson = new Gson();
         CompoundTag globalTag = new CompoundTag();
@@ -91,6 +107,7 @@ public class ModSavedData extends SavedData {
 
         compoundTag.put("Global", globalTag);
         compoundTag.put("Worlds", worldsTag);
+
         return compoundTag;
     }
 

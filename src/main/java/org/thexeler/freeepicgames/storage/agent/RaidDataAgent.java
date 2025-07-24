@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.agent;
+package org.thexeler.freeepicgames.storage.agent;
 
 import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
@@ -7,25 +7,25 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.type.RaidType;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
-import org.thexeler.freeepicgames.database.untils.ModSavedData;
-import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.storage.type.RaidType;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.ModSavedData;
+import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 import org.thexeler.freeepicgames.events.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
 
-public class GlobalRaidDataAgent extends AbstractDataAgent {
+public class RaidDataAgent extends AbstractDataAgent {
 
-    private static GlobalRaidDataAgent instance;
+    private static RaidDataAgent instance;
 
     private final JsonObject optionData;
     private final JsonObject raidInstanceData;
 
     private final Map<String, RaidInstanceView> raidInstances = Collections.synchronizedMap(new HashMap<>());
 
-    private GlobalRaidDataAgent() {
+    private RaidDataAgent() {
         optionData = ModSavedData.getGlobalData("RaidSettings");
         if (FreeEpicGamesConfigs.isEnabledRaidCachePersistence) {
             raidInstanceData = ModSavedData.getGlobalData("RaidsInstanceCache");
@@ -36,9 +36,9 @@ public class GlobalRaidDataAgent extends AbstractDataAgent {
         load();
     }
 
-    public static GlobalRaidDataAgent getInstance() {
+    public static RaidDataAgent getInstance() {
         if (instance == null) {
-            instance = new GlobalRaidDataAgent();
+            instance = new RaidDataAgent();
         }
         return instance;
     }

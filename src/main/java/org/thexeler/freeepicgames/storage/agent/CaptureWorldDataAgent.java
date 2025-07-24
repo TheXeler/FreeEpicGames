@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.agent;
+package org.thexeler.freeepicgames.storage.agent;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -7,23 +7,21 @@ import lombok.Setter;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
-import org.thexeler.freeepicgames.database.untils.ModSavedData;
-import org.thexeler.freeepicgames.database.view.AreaView;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.ModSavedData;
+import org.thexeler.freeepicgames.storage.view.AreaView;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldCaptureDataAgent extends AbstractDataAgent {
-    private static final Map<ServerLevel, WorldCaptureDataAgent> instances = new HashMap<>();
+public class CaptureWorldDataAgent extends AbstractWorldDataAgent {
+    private static final Map<ServerLevel, CaptureWorldDataAgent> instances = new HashMap<>();
     private final JsonObject optionData;
     private final JsonObject areasData;
     private final JsonObject areasCache;
 
-    @Getter
-    private final ServerLevel world;
     @Getter
     @Setter
     private String attacker, attackerCommander, defender, defenderCommander;
@@ -35,8 +33,8 @@ public class WorldCaptureDataAgent extends AbstractDataAgent {
     private String exportObjectiveName;
     private final Map<String, AreaView> areaViewMap = Collections.synchronizedMap(new HashMap<>());
 
-    private WorldCaptureDataAgent(ServerLevel world) {
-        this.world = world;
+    private CaptureWorldDataAgent(ServerLevel world) {
+        super(world);
 
         optionData = ModSavedData.getWorldData(world, "CaptureSettings");
         areasData = ModSavedData.getWorldData(world, "AreasData");
@@ -49,8 +47,8 @@ public class WorldCaptureDataAgent extends AbstractDataAgent {
         load();
     }
 
-    public static WorldCaptureDataAgent getInstance(ServerLevel world) {
-        return instances.computeIfAbsent(world, WorldCaptureDataAgent::new);
+    public static CaptureWorldDataAgent getInstance(ServerLevel world) {
+        return instances.computeIfAbsent(world, CaptureWorldDataAgent::new);
     }
 
     public Collection<AreaView> getAllAreas() {

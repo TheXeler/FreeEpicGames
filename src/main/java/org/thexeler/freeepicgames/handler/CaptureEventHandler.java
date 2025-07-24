@@ -16,9 +16,9 @@ import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
-import org.thexeler.freeepicgames.database.untils.LogicTeam;
-import org.thexeler.freeepicgames.database.view.AreaView;
+import org.thexeler.freeepicgames.storage.agent.CaptureWorldDataAgent;
+import org.thexeler.freeepicgames.storage.utils.LogicTeam;
+import org.thexeler.freeepicgames.storage.view.AreaView;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +33,7 @@ public class CaptureEventHandler {
             if (tickCount % FreeEpicGamesConfigs.captureTick == 0) {
                 tickCount -= FreeEpicGamesConfigs.captureTick;
                 event.getServer().getAllLevels().forEach(serverLevel -> {
-                    WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance(serverLevel);
+                    CaptureWorldDataAgent agent = CaptureWorldDataAgent.getInstance(serverLevel);
                     String attackerName = agent.getAttacker();
                     String defenderName = agent.getDefender();
 
@@ -94,7 +94,7 @@ public class CaptureEventHandler {
             try (Level world = arrow.level()) {
                 if (world.isClientSide()) return;
                 if (arrow.getOwner() == null) return;
-                WorldCaptureDataAgent agent = WorldCaptureDataAgent.getInstance((ServerLevel) world);
+                CaptureWorldDataAgent agent = CaptureWorldDataAgent.getInstance((ServerLevel) world);
                 EntityType<?> cannonType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.fromNamespaceAndPath("createbigcannons", "drop_mortar_shell"));
 
                 String uuid = arrow.getOwner().getStringUUID();

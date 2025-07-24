@@ -12,8 +12,8 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
-import org.thexeler.freeepicgames.database.type.JobType;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
+import org.thexeler.freeepicgames.storage.type.JobType;
 
 public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -26,7 +26,7 @@ public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
-            GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+            JobDataAgent agent = JobDataAgent.getInstance();
             JobType type = JobType.getType(agent.getPlayerJob(player));
             if (type != null) {
                 type.getAllItems().forEach(stack -> {

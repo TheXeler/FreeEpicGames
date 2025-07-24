@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.type;
+package org.thexeler.freeepicgames.storage.type;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -10,8 +10,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.database.untils.DataPacket;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.DataPacket;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 
 import java.util.*;
 
@@ -123,11 +123,18 @@ public class JobType {
         FreeEpicGames.LOGGER.info("Registered {} JobTypes.", types.size());
     }
 
+
     public static void expire() {
-        FreeEpicGames.LOGGER.info("Saving JobTypes...");
-        Map<String, JsonObject> jsonMap = new HashMap<>();
-        types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
-        DataUtils.savePacketAllData(DataPacket.JOB_TYPE, jsonMap);
+        expire(false);
+    }
+
+    public static void expire(boolean forced) {
+        if (!forced) {
+            FreeEpicGames.LOGGER.info("Saving JobTypes...");
+            Map<String, JsonObject> jsonMap = new HashMap<>();
+            types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
+            DataUtils.savePacketAllData(DataPacket.JOB_TYPE, jsonMap);
+        }
         FreeEpicGames.LOGGER.info("Expiring JobTypes...");
         types.clear();
         FreeEpicGames.LOGGER.info("Expired JobTypes.");

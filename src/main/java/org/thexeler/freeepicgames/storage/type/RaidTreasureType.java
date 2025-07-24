@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.type;
+package org.thexeler.freeepicgames.storage.type;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -9,8 +9,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.database.untils.DataPacket;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.DataPacket;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 
 import java.util.*;
 
@@ -93,10 +93,16 @@ public class RaidTreasureType {
     }
 
     public static void expire() {
-        FreeEpicGames.LOGGER.info("Saving RaidTreasureTypes...");
-        Map<String, JsonObject> jsonMap = new HashMap<>();
-        types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
-        DataUtils.savePacketAllData(DataPacket.RAID_TREASURE_TYPE, jsonMap);
+        expire(false);
+    }
+
+    public static void expire(boolean forced) {
+        if (!forced) {
+            FreeEpicGames.LOGGER.info("Saving RaidTreasureTypes...");
+            Map<String, JsonObject> jsonMap = new HashMap<>();
+            types.forEach((name, type) -> jsonMap.put(name, type.toJson()));
+            DataUtils.savePacketAllData(DataPacket.RAID_TREASURE_TYPE, jsonMap);
+        }
         FreeEpicGames.LOGGER.info("Expiring RaidTreasureTypes...");
         types.clear();
         FreeEpicGames.LOGGER.info("Expired RaidTreasureTypes.");

@@ -3,12 +3,12 @@ package org.thexeler.freeepicgames.command;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
+import org.thexeler.freeepicgames.storage.type.RaidType;
+import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 import org.thexeler.lamp.actor.ForgeCommandActor;
 import org.thexeler.lamp.annotations.*;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.type.RaidTreasureType;
-import org.thexeler.freeepicgames.database.type.RaidType;
-import org.thexeler.freeepicgames.database.view.RaidInstanceView;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
@@ -103,7 +103,7 @@ public class ModelRaidCommand {
     @RequiresOP
     @Subcommand("instance delete <id>")
     public static void instanceDelete(ForgeCommandActor sender, String id) {
-        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        RaidDataAgent agent = RaidDataAgent.getInstance();
         RaidInstanceView view = agent.getRaidInstance(id);
         if (view != null) {
             view.destroy();
@@ -118,8 +118,8 @@ public class ModelRaidCommand {
     @Subcommand("reload")
     public static void reload(ForgeCommandActor sender) {
         sender.reply("正在重载配置文件...");
-        RaidType.expire();
-        RaidTreasureType.expire();
+        RaidType.expire(true);
+        RaidTreasureType.expire(true);
         RaidTreasureType.init();
         RaidType.init();
         sender.reply("配置文件重载完成");

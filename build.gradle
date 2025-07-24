@@ -27,6 +27,27 @@ version = minecraft_version + "-" + mod_version
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'Curse Maven'
+        url = "https://www.cursemaven.com"
+    }
+    maven {
+        name = "Sona Type"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "Code MC"
+        url = "https://repo.codemc.io/repository/maven-public/"
+    }
+    maven {
+        name = "Latvian"
+        url = "https://maven.latvian.dev/releases"
+    }
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io"
+    }
 }
 
 base {
@@ -83,21 +104,6 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-repositories {
-    maven {
-        name = 'Curse Maven'
-        url = "https://www.cursemaven.com"
-    }
-    maven {
-        name = "Sona Type"
-        url = "https://oss.sonatype.org/content/groups/public/"
-    }
-    maven {
-        name = "Code MC"
-        url = "https://repo.codemc.io/repository/maven-public/"
-    }
-}
-
 configurations {
     shade
     implementation.extendsFrom shade
@@ -117,16 +123,18 @@ tasks.register('runShadowJar', ShadowJar) {
 }
 
 dependencies {
-    shade 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
-    shade 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
+    shade "io.github.revxrsal:lamp.common:4.0.0-rc.11"
+    shade "io.github.revxrsal:lamp.brigadier:4.0.0-rc.11"
 
-    implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
-    implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
+    implementation "com.mojang:brigadier:1.0.18"
+    implementation "io.github.revxrsal:lamp.common:4.0.0-rc.11"
+    implementation "io.github.revxrsal:lamp.brigadier:4.0.0-rc.11"
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
 
-    implementation 'com.mojang:brigadier:1.0.18'
+    implementation "org.javassist:javassist:3.30.2-GA"
+    compileOnly "org.projectlombok:lombok:1.18.30"
+    annotationProcessor "org.projectlombok:lombok:1.18.30"
 
     api runShadowJar.outputs.files
     additionalRuntimeClasspath runShadowJar.outputs.files

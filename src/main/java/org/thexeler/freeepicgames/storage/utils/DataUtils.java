@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.untils;
+package org.thexeler.freeepicgames.storage.utils;
 
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
@@ -18,10 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesPaths;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.view.AbstractCacheView;
-import org.thexeler.freeepicgames.database.view.AbstractView;
-import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.view.AbstractCacheView;
+import org.thexeler.freeepicgames.storage.view.AbstractView;
+import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -54,65 +54,65 @@ public class DataUtils {
         return codec.parse(JsonOps.INSTANCE, tag).getOrThrow();
     }
 
-    public static String getValue(JsonObject jsonObject, String key, String defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static String getValue(JsonObject jsonObject, String key, @NotNull String defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.addProperty(key, defaultValue);
         }
         return jsonObject.get(key).getAsString();
     }
 
     public static int getValue(JsonObject jsonObject, String key, int defaultValue) {
-        if (jsonObject.get(key) == null) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.addProperty(key, defaultValue);
         }
         return jsonObject.get(key).getAsInt();
     }
 
-    public static float getValue(JsonObject jsonObject, String key, float defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static float getValue(JsonObject jsonObject, String key , float defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.addProperty(key, defaultValue);
         }
         return jsonObject.get(key).getAsFloat();
     }
 
     public static double getValue(JsonObject jsonObject, String key, double defaultValue) {
-        if (jsonObject.get(key) == null) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.addProperty(key, defaultValue);
         }
         return jsonObject.get(key).getAsDouble();
     }
 
     public static boolean getValue(JsonObject jsonObject, String key, boolean defaultValue) {
-        if (jsonObject.get(key) == null) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.addProperty(key, defaultValue);
         }
         return jsonObject.get(key).getAsBoolean();
     }
 
-    public static JsonObject getValue(JsonObject jsonObject, String key, JsonObject defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static JsonObject getValue(JsonObject jsonObject, String key, @NotNull JsonObject defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.add(key, defaultValue);
         }
         return jsonObject.get(key).getAsJsonObject();
     }
 
-    public static JsonArray getValue(JsonObject jsonObject, String key, JsonArray defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static JsonArray getValue(JsonObject jsonObject, String key, @NotNull JsonArray defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.add(key, defaultValue);
         }
         return jsonObject.get(key).getAsJsonArray();
     }
 
-    public static Map<String, JsonElement> getValue(JsonObject jsonObject, String key, Map<String, JsonElement> defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static Map<String, JsonElement> getValue(JsonObject jsonObject, String key, @NotNull Map<String, JsonElement> defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.add(key, new JsonObject());
             defaultValue.forEach((s, element) -> jsonObject.get(key).getAsJsonObject().add(s, element));
         }
         return jsonObject.get(key).getAsJsonObject().asMap();
     }
 
-    public static List<JsonElement> getValue(JsonObject jsonObject, String key, List<JsonElement> defaultValue) {
-        if (jsonObject.get(key) == null) {
+    public static List<JsonElement> getValue(JsonObject jsonObject, String key, @NotNull List<JsonElement> defaultValue) {
+        if (jsonObject.get(key) == null || jsonObject.get(key).isJsonNull()) {
             jsonObject.add(key, new JsonArray());
             defaultValue.forEach(element -> jsonObject.get(key).getAsJsonArray().add(element));
         }
@@ -138,6 +138,7 @@ public class DataUtils {
             }
         });
     }
+
 
     public static JsonArray fromContainer(Container container) {
         JsonArray array = new JsonArray();
@@ -201,26 +202,33 @@ public class DataUtils {
 
         try {
             Files.walkFileTree(dir, new SimpleFileVisitor<>() {
-                String prefix = "";
+                String prefix = null;
 
                 @Override
                 public @NotNull FileVisitResult preVisitDirectory(@NotNull Path dir, @NotNull BasicFileAttributes attrs) throws IOException {
                     if (Files.isHidden(dir) || Files.isSymbolicLink(dir)) {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
-                    prefix += dir.getFileName().toString() + '.';
+                    if (prefix != null) {
+                        prefix += dir.getFileName().toString() + '.';
+                    } else {
+                        prefix = "";
+                    }
 
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) {
-                    if (file.endsWith(".json")) {
+                    if (file.toString().endsWith(".json")) {
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
                         try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
                             JsonObject object = gson.fromJson(reader, JsonObject.class);
 
                             String filePath = file.getFileName().toString();
+                            if (object == null) {
+                                object = new JsonObject();
+                            }
                             jsonMap.put(prefix + filePath.substring(0, filePath.lastIndexOf('.')), object);
                         } catch (IOException e) {
                             FreeEpicGames.LOGGER.error(e.getMessage());
@@ -271,7 +279,7 @@ public class DataUtils {
 
     public static boolean isChunkEmpty(int chunkPosX, int chunkPosZ) {
         boolean flag = true;
-        for (RaidInstanceView view : GlobalRaidDataAgent.getInstance().getAllRaidInstance()) {
+        for (RaidInstanceView view : RaidDataAgent.getInstance().getAllRaidInstance()) {
             if (view.isInside(new Vec3((chunkPosX * 16) - 8, 0, (chunkPosZ * 16) - 8))) {
                 flag = false;
                 break;

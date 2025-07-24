@@ -44,7 +44,7 @@ public class MindMachine {
 
     public void addIntention(Intention intention) {
         if (intention.getPriority() == IntentionPriority.URGENT) {
-            this.intentions.addFirst(intention);
+            this.intentions.add(0, intention);
         } else {
             ListIterator<Intention> i = this.intentions.listIterator();
 
@@ -71,13 +71,13 @@ public class MindMachine {
 
 
     private void step() {
-        Intention intention = intentions.getFirst();
+        Intention intention = intentions.get(0);
 
         if (intention != null) {
             if (intention.getType() != IntentionType.IDLE) {
                 if (intention.execute()) {
                     if (intention.getType() != IntentionType.IDLE) {
-                        intentions.removeFirst();
+                        intentions.remove(0);
                     }
                 }
                 intentions.forEach(i -> {
@@ -92,7 +92,7 @@ public class MindMachine {
 
     public boolean interrupt() {
         if (intentions.size() > 1) {
-            intentions.removeFirst();
+            intentions.remove(0);
             return true;
         }
         return false;

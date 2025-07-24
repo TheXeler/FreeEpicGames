@@ -12,8 +12,8 @@ import org.thexeler.lamp.actor.ForgeCommandActor;
 import org.thexeler.lamp.annotations.RequiresOP;
 import org.thexeler.lamp.annotations.WithJobType;
 import org.thexeler.lamp.parameters.EntitySelectorList;
-import org.thexeler.freeepicgames.database.agent.GlobalJobDataAgent;
-import org.thexeler.freeepicgames.database.type.JobType;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
+import org.thexeler.freeepicgames.storage.type.JobType;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
@@ -123,7 +123,7 @@ public class ModelJobCommand {
     @RequiresOP
     @Subcommand("player get <player>")
     public void playerGet(ForgeCommandActor sender, ServerPlayer player) {
-        GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+        JobDataAgent agent = JobDataAgent.getInstance();
         sender.reply("玩家" + player.getDisplayName() + "的职业为:" + agent.getPlayerJob(player));
     }
 
@@ -131,7 +131,7 @@ public class ModelJobCommand {
     @RequiresOP
     @Subcommand("player set <player> <name>")
     public void playerSet(ForgeCommandActor sender, ServerPlayer player, @WithJobType String name) {
-        GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+        JobDataAgent agent = JobDataAgent.getInstance();
         if (agent.setPlayerJob(player, name)) {
             sender.reply("玩家" + player.getDisplayName().getString() + "已被设置为" + name);
         } else {
@@ -143,7 +143,7 @@ public class ModelJobCommand {
     @RequiresOP
     @Subcommand("player set <selector> <name>")
     public void playerSet(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector, @WithJobType String name) {
-        GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+        JobDataAgent agent = JobDataAgent.getInstance();
         selector.stream().filter(entity -> entity instanceof ServerPlayer).forEach(player -> {
                     if (agent.setPlayerJob(player, name)) {
                         sender.reply("玩家" + player.getDisplayName().getString() + "已被设置为" + name);
@@ -158,7 +158,7 @@ public class ModelJobCommand {
     @RequiresOP
     @Subcommand("player refresh <player>")
     public void playerRefresh(ForgeCommandActor sender, ServerPlayer player) {
-        GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+        JobDataAgent agent = JobDataAgent.getInstance();
         JobType type = JobType.getType(agent.getPlayerJob(player));
         player.getInventory().clearContent();
         if (type != null) {
@@ -171,7 +171,7 @@ public class ModelJobCommand {
     @RequiresOP
     @Subcommand("player refresh <selector>")
     public void playerRefresh(ForgeCommandActor sender, EntitySelectorList<ServerPlayer> selector) {
-        GlobalJobDataAgent agent = GlobalJobDataAgent.getInstance();
+        JobDataAgent agent = JobDataAgent.getInstance();
         selector.stream().filter(entity -> entity instanceof ServerPlayer).forEach(player -> {
                     JobType type = JobType.getType(agent.getPlayerJob(player));
                     player.getInventory().clearContent();
@@ -208,7 +208,7 @@ public class ModelJobCommand {
     @Subcommand("reload")
     public void reload(ForgeCommandActor sender) {
         sender.reply("正在重载配置文件...");
-        JobType.expire();
+        JobType.expire(true)    ;
         JobType.init();
         sender.reply("配置文件重载完成");
     }

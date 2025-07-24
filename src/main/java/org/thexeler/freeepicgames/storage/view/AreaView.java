@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,13 +11,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.thexeler.freeepicgames.database.agent.WorldCaptureDataAgent;
-import org.thexeler.freeepicgames.database.untils.LogicTeam;
+import org.thexeler.freeepicgames.storage.agent.CaptureWorldDataAgent;
+import org.thexeler.freeepicgames.storage.utils.LogicTeam;
 
 import java.util.List;
 
 public class AreaView implements AbstractView, AbstractCacheView {
-    private final WorldCaptureDataAgent rootAgent;
+    private final CaptureWorldDataAgent rootAgent;
 
     @Getter
     private final String name;
@@ -41,7 +41,7 @@ public class AreaView implements AbstractView, AbstractCacheView {
 
     private final AABB frame;
 
-    public AreaView(String name, JsonObject areaInfo, WorldCaptureDataAgent agent) {
+    public AreaView(String name, JsonObject areaInfo, CaptureWorldDataAgent agent) {
         this.name = name;
         this.rootAgent = agent;
 

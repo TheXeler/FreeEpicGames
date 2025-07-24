@@ -1,7 +1,6 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.Tag;
 
 public interface AbstractCacheView {
     JsonObject toCacheJson();

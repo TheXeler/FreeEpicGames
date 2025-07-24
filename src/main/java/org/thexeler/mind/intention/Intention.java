@@ -7,7 +7,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public abstract class Intention {
     @Getter
@@ -137,7 +141,6 @@ public abstract class Intention {
 
             if (this.distance != distance) {
                 if (forceDistance || this.distance < distance) {
-                    // movePos应为圆心为targetPos半径为distance的圆上最近一点
                     this.origin.move(MoverType.SELF, new Vec3(
                             originPos.x + (dx * distance),
                             originPos.y + (dy * distance),
@@ -201,6 +204,38 @@ public abstract class Intention {
                 return this.target.isAlive();
             }
             return true;
+        }
+    }
+
+    public static class KubeJSIntention extends Intention {
+        @Getter
+        protected final Map<String, Object> intentionMemory;
+        @Setter
+        protected Predicate<KubeJSIntention> executeFunction;
+        @Setter
+        protected Consumer<KubeJSIntention> holdFunction;
+
+        public KubeJSIntention(Entity origin, IntentionType type, Predicate<KubeJSIntention> executeFunction, Consumer<KubeJSIntention> holdFunction) {
+            super(origin, type);
+            this.intentionMemory = new HashMap<>();
+            this.executeFunction = executeFunction;
+            this.holdFunction = holdFunction;
+        }
+
+
+        @Override
+        public boolean execute() {
+            if (executeFunction != null) {
+                return executeFunction.test(this);
+            }
+            return true;
+        }
+
+        @Override
+        public void hold() {
+            if (holdFunction != null) {
+                holdFunction.accept(this);
+            }
         }
     }
 }

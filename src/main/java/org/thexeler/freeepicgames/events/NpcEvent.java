@@ -6,61 +6,59 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import org.thexeler.freeepicgames.database.view.NpcView;
+import org.thexeler.freeepicgames.storage.view.NpcView;
 
 public abstract class NpcEvent extends Event {
     @Getter
-    private final Entity entity;
+    protected final Entity entity;
     @Getter
-    private final NpcView view;
+    protected final NpcView view;
 
     public NpcEvent(NpcView npc) {
         this.entity = npc.getOriginEntity();
         this.view = npc;
     }
 
-    public static class CreateEvent extends NpcEvent {
-        public CreateEvent(NpcView npc) {
+    public static class Create extends NpcEvent {
+        public Create(NpcView npc) {
             super(npc);
         }
     }
 
-    public static class JoinEvent extends NpcEvent {
+    public static class Join extends NpcEvent {
         @Getter
         private final ServerLevel level;
 
-        public JoinEvent(NpcView npc, ServerLevel level) {
+        public Join(NpcView npc, ServerLevel level) {
             super(npc);
             this.level = level;
         }
     }
 
-    public static class DeathEvent extends NpcEvent implements ICancellableEvent {
+    public static class Death extends NpcEvent implements ICancellableEvent {
         @Getter
         private final DamageSource source;
 
-        public DeathEvent(NpcView npc, DamageSource source) {
+        public Death(NpcView npc, DamageSource source) {
             super(npc);
             this.source = source;
         }
     }
 
-    public static class InteractEvent extends NpcEvent {
+    public static class Interact extends NpcEvent {
         @Getter
         private final Player player;
 
-        public InteractEvent(NpcView npc, Player player) {
+        public Interact(NpcView npc, Player player) {
             super(npc);
             this.player = player;
         }
     }
 
-    public static class DamageEvent extends NpcEvent implements ICancellableEvent {
+    public static class Damage extends NpcEvent implements ICancellableEvent {
         @Getter
         private final DamageSource source;
         @Getter
@@ -69,7 +67,7 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final DamageContainer container;
 
-        public DamageEvent(NpcView npc, DamageSource source, float amount, DamageContainer container) {
+        public Damage(NpcView npc, DamageSource source, float amount, DamageContainer container) {
             super(npc);
             this.source = source;
             this.amount = amount;
@@ -77,26 +75,26 @@ public abstract class NpcEvent extends Event {
         }
     }
 
-    public static class TickEvent extends NpcEvent {
-        public TickEvent(NpcView npc) {
+    public static class Tick extends NpcEvent {
+        public Tick(NpcView npc) {
             super(npc);
         }
     }
 
-    public static class KilledEvent extends NpcEvent implements ICancellableEvent {
+    public static class Killed extends NpcEvent implements ICancellableEvent {
         @Getter
         private final Entity entity;
         @Getter
         private final DamageSource source;
 
-        public KilledEvent(NpcView npc, Entity entity, DamageSource source) {
+        public Killed(NpcView npc, Entity entity, DamageSource source) {
             super(npc);
             this.entity = entity;
             this.source = source;
         }
     }
 
-    public static class MeleeAttackEvent extends NpcEvent {
+    public static class Attack extends NpcEvent {
         @Getter
         private final Entity target;
         @Getter
@@ -107,41 +105,12 @@ public abstract class NpcEvent extends Event {
         @Getter
         private final DamageContainer container;
 
-        public MeleeAttackEvent(NpcView npc, Entity target, DamageSource source, float amount, DamageContainer container) {
+        public Attack(NpcView npc, Entity target, DamageSource source, float amount, DamageContainer container) {
             super(npc);
             this.target = target;
             this.source = source;
             this.amount = amount;
             this.container = container;
-        }
-    }
-
-    public abstract static class RangeAttack extends NpcEvent {
-        @Getter
-        private final Projectile projectile;
-
-        public RangeAttack(NpcView npc, Projectile projectile) {
-            super(npc);
-            this.projectile = projectile;
-        }
-
-        public static class FireEvent extends RangeAttack {
-            public FireEvent(NpcView npc, Projectile projectile) {
-                super(npc, projectile);
-            }
-        }
-
-        public static class HitEvent extends RangeAttack implements ICancellableEvent {
-            @Getter
-            private final HitResult result;
-            @Getter
-            private final Entity target;
-
-            public HitEvent(NpcView npc, Projectile projectile, HitResult result, Entity target) {
-                super(npc, projectile);
-                this.result = result;
-                this.target = target;
-            }
         }
     }
 }

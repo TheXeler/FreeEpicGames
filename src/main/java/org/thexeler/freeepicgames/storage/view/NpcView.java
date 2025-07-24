@@ -1,23 +1,23 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import org.thexeler.freeepicgames.database.agent.WorldNpcDataAgent;
-import org.thexeler.freeepicgames.database.type.NpcType;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.storage.agent.NpcWorldDataAgent;
+import org.thexeler.freeepicgames.storage.type.NpcType;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import org.thexeler.mind.MindMachine;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class NpcView implements AbstractView {
-    private final WorldNpcDataAgent rootAgent;
+    private final NpcWorldDataAgent rootAgent;
 
     @Getter
-    private final String id;
+    private final UUID id;
     @Getter
     private final NpcType npcType;
     @Getter
@@ -28,25 +28,31 @@ public class NpcView implements AbstractView {
     private final MindMachine mind;
     // TODO : saved
 
-    public NpcView(@NotNull Entity origin, NpcType type, WorldNpcDataAgent agent) {
+    public NpcView(@NotNull Entity originEntity, NpcType type, NpcWorldDataAgent agent) {
         this.rootAgent = agent;
-        this.originEntity = origin;
-        this.id = origin.getStringUUID();
+        this.originEntity = originEntity;
+        this.id = originEntity.getUUID();
         this.npcType = type;
 
+        this. rootAgent.getAllNpc();
+
         this.npcData = new HashMap<>();
-        this.mind = new MindMachine(origin);
+        this.mind = new MindMachine(originEntity);
     }
 
-    public NpcView(JsonObject object, WorldNpcDataAgent agent) {
+    public NpcView(JsonObject object, NpcWorldDataAgent agent) {
         this.rootAgent = agent;
 
-        this.id = DataUtils.getValue(object, "id", "");
+        this.id = UUID.fromString(DataUtils.getValue(object, "id", ""));
         this.npcType = NpcType.getType(DataUtils.getValue(object, "type", ""));
-        this.originEntity = agent.getWorld().getEntity(UUID.fromString(id));
+        this.originEntity = agent.getWorld().getEntity(id);
 
         this.npcData = new HashMap<>();
         this.mind = new MindMachine(this.originEntity);
+    }
+
+    public String getName() {
+        return originEntity.getName().getString();
     }
 
     public void discard() {
@@ -74,14 +80,14 @@ public class NpcView implements AbstractView {
     }
 
     public static NpcView getEntity(ServerLevel level, String id) {
-        return WorldNpcDataAgent.getInstance(level).getNpcView(id);
+        return NpcWorldDataAgent.getInstance(level).getNpcView(id);
     }
 
     @Override
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("id", id);
+        jsonObject.addProperty("id", id.toString());
         jsonObject.addProperty("type", npcType.getName());
 
         JsonObject npcDataJson = new JsonObject();

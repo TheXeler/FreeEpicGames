@@ -1,26 +1,26 @@
-package org.thexeler.freeepicgames.database.agent;
+package org.thexeler.freeepicgames.storage.agent;
 
 import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.database.type.JobType;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
-import org.thexeler.freeepicgames.database.untils.ModSavedData;
+import org.thexeler.freeepicgames.storage.type.JobType;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
+import org.thexeler.freeepicgames.storage.utils.ModSavedData;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GlobalJobDataAgent extends AbstractDataAgent {
-    private static GlobalJobDataAgent instance;
+public class JobDataAgent extends AbstractDataAgent {
+    private static JobDataAgent instance;
 
     private final JsonObject playerData;
 
     private final Map<String, String> playerJobMap = Collections.synchronizedMap(new HashMap<>());
 
-    private GlobalJobDataAgent() {
+    private JobDataAgent() {
         if (FreeEpicGamesConfigs.isEnabledJobCachePersistence) {
             playerData = ModSavedData.getGlobalData("JobsCache");
         } else {
@@ -30,9 +30,9 @@ public class GlobalJobDataAgent extends AbstractDataAgent {
         load();
     }
 
-    public static GlobalJobDataAgent getInstance() {
+    public static JobDataAgent getInstance() {
         if (instance == null) {
-            instance = new GlobalJobDataAgent();
+            instance = new JobDataAgent();
         }
         return instance;
     }

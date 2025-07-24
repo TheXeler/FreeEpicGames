@@ -3,7 +3,7 @@ package org.thexeler.lamp.annotations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.lamp.actor.ForgeCommandActor;
-import org.thexeler.freeepicgames.database.type.RaidType;
+import org.thexeler.freeepicgames.storage.type.RaidType;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.autocomplete.SuggestionProvider;

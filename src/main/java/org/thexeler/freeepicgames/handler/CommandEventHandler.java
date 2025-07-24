@@ -14,9 +14,8 @@ import revxrsal.commands.Lamp;
 
 @EventBusSubscriber
 public class CommandEventHandler {
-
     @SubscribeEvent
-    public void onCommandsRegister(RegisterCommandsEvent event) {
+    public static void onCommandsRegister(RegisterCommandsEvent event) {
         Lamp<ForgeCommandActor> lamp = ForgeLamp.builder(event.getDispatcher()).build();
         lamp.register(new ModelNpcCommand());
         if (FreeEpicGamesConfigs.isEnabledRaid) {

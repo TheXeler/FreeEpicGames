@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.database.view;
+package org.thexeler.freeepicgames.storage.view;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,10 +17,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.database.agent.GlobalRaidDataAgent;
-import org.thexeler.freeepicgames.database.type.RaidTreasureType;
-import org.thexeler.freeepicgames.database.type.RaidType;
-import org.thexeler.freeepicgames.database.untils.DataUtils;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
+import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
+import org.thexeler.freeepicgames.storage.type.RaidType;
+import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import org.thexeler.freeepicgames.events.RaidEvent;
 import oshi.util.tuples.Pair;
 
@@ -197,7 +197,7 @@ public class RaidInstanceView implements AbstractCacheView {
 
     @Nullable
     public static RaidInstanceView getRaidInstanceFromChunk(ChunkPos chunkPos) {
-        GlobalRaidDataAgent agent = GlobalRaidDataAgent.getInstance();
+        RaidDataAgent agent = RaidDataAgent.getInstance();
         AtomicReference<RaidInstanceView> ret = new AtomicReference<>(null);
         agent.getAllRaidInstance().forEach(view -> {
             if (view.isInside(new Vec3(chunkPos.getMiddleBlockX(), 0, chunkPos.getMiddleBlockZ()))) {
@@ -237,7 +237,7 @@ public class RaidInstanceView implements AbstractCacheView {
         if (isActive) {
             if (!NeoForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this)).isCanceled()) {
                 isActive = false;
-                GlobalRaidDataAgent.getInstance().removeRaidInstance(this);
+                RaidDataAgent.getInstance().removeRaidInstance(this);
 
                 playerBackPosMappings.forEach((u, v) -> {
                     Player player = FreeEpicGames.RAID_WORLD.getPlayerByUUID(UUID.fromString(u));

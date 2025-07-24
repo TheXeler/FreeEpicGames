@@ -5,13 +5,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import org.thexeler.freeepicgames.database.view.RaidInstanceView;
+import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 
 public abstract class RaidEvent extends Event {
     // TODO
 
     @Getter
-    private final RaidInstanceView view;
+    protected final RaidInstanceView view;
 
     public RaidEvent(RaidInstanceView view) {
         this.view = view;
