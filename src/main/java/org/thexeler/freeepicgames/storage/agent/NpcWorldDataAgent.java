@@ -13,7 +13,7 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.events.NpcEvent;
+import org.thexeler.freeepicgames.event.NpcEvent;
 import org.thexeler.freeepicgames.storage.type.NpcType;
 import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import org.thexeler.freeepicgames.storage.utils.ModSavedData;

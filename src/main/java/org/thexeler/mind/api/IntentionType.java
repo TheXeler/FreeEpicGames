@@ -1,4 +1,4 @@
-package org.thexeler.mind.intention;
+package org.thexeler.mind.api;
 
 public enum IntentionType {
     IDLE,

@@ -18,14 +18,14 @@ import org.thexeler.freeepicgames.storage.type.JobType;
 public class JobEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(LivingDeathEvent event) {
-        if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
+        if (FreeEpicGamesConfigs.isEnabledClasses && event.getEntity() instanceof ServerPlayer player) {
             player.getInventory().clearContent();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
+        if (FreeEpicGamesConfigs.isEnabledClasses && event.getEntity() instanceof ServerPlayer player) {
             JobDataAgent agent = JobDataAgent.getInstance();
             JobType type = JobType.getType(agent.getPlayerJob(player));
             if (type != null) {
@@ -55,7 +55,7 @@ public class JobEventHandler {
 
     @SubscribeEvent
     public void onItemUse(LivingEntityUseItemEvent event) {
-        if (FreeEpicGamesConfigs.isEnabledJob && event.getEntity() instanceof ServerPlayer player) {
+        if (FreeEpicGamesConfigs.isEnabledClasses && event.getEntity() instanceof ServerPlayer player) {
             CustomData data = event.getItem().getComponents().get(DataComponents.CUSTOM_DATA);
             if (data != null && data.contains("custom_command")) {
                 String customCommand = data.copyTag().getString("custom_command");

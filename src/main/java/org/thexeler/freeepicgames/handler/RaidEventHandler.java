@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesKeys;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
 import org.thexeler.freeepicgames.storage.view.RaidInstanceView;

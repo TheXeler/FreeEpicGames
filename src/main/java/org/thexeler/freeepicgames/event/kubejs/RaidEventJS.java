@@ -1,11 +1,11 @@
-package org.thexeler.freeepicgames.events.kubejs;
+package org.thexeler.freeepicgames.event.kubejs;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
 
 @Getter

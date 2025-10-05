@@ -11,7 +11,7 @@ import org.thexeler.freeepicgames.storage.type.RaidType;
 import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import org.thexeler.freeepicgames.storage.utils.ModSavedData;
 import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;

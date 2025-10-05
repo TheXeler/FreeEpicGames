@@ -11,7 +11,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -22,10 +21,10 @@ import org.thexeler.freeepicgames.handler.CaptureEventHandler;
 import org.thexeler.freeepicgames.handler.JobEventHandler;
 import org.thexeler.freeepicgames.handler.NpcEventHandler;
 import org.thexeler.freeepicgames.handler.RaidEventHandler;
-import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
-import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.agent.CaptureWorldDataAgent;
+import org.thexeler.freeepicgames.storage.agent.JobDataAgent;
 import org.thexeler.freeepicgames.storage.agent.NpcWorldDataAgent;
+import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.type.JobType;
 import org.thexeler.freeepicgames.storage.type.NpcType;
 import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
@@ -50,7 +49,6 @@ public class FreeEpicGames {
 
     public FreeEpicGames(IEventBus modEventBus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.register(this);
-        modContainer.registerConfig(ModConfig.Type.SERVER, FreeEpicGamesConfigs.SPEC);
 
         EVENT_LISTENER.add(new CaptureEventHandler());
         EVENT_LISTENER.add(new JobEventHandler());
@@ -63,7 +61,7 @@ public class FreeEpicGames {
         event.addListener(new PreparableReloadListener() {
             @Override
             public @NotNull CompletableFuture<Void> reload(@NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller preparationsProfiler, @NotNull ProfilerFiller reloadProfiler, @NotNull Executor backgroundExecutor, @NotNull Executor gameExecutor) {
-                if (FreeEpicGamesConfigs.isEnabledJob) {
+                if (FreeEpicGamesConfigs.isEnabledClasses) {
                     JobType.expire(true);
                     JobType.init();
                 }
@@ -83,10 +81,12 @@ public class FreeEpicGames {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onOverWorldLoad(ServerStartedEvent event) {
+        FreeEpicGamesConfigs.load();
+
         FreeEpicGames.RAID_WORLD = event.getServer().getLevel(FreeEpicGamesKeys.RAID_WORLD_KEY);
         FreeEpicGames.OVER_WORLD = event.getServer().overworld();
 
-        if (FreeEpicGamesConfigs.isEnabledJob) {
+        if (FreeEpicGamesConfigs.isEnabledClasses) {
             JobType.init();
         }
         if (FreeEpicGamesConfigs.isEnabledRaid) {
@@ -99,17 +99,14 @@ public class FreeEpicGames {
         EVENT_LISTENER.forEach(NeoForge.EVENT_BUS::register);
     }
 
-    @SubscribeEvent
-    public void onAddReloadListener(AddReloadListenerEvent event) {
-
-    }
-
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onOverWorldUnload(ServerStoppedEvent event) {
+        FreeEpicGamesConfigs.save();
+
         FreeEpicGames.RAID_WORLD = null;
         FreeEpicGames.OVER_WORLD = null;
 
-        if (FreeEpicGamesConfigs.isEnabledJob) {
+        if (FreeEpicGamesConfigs.isEnabledClasses) {
             JobType.expire();
         }
         if (FreeEpicGamesConfigs.isEnabledRaid) {

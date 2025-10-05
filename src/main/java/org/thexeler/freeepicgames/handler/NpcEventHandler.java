@@ -1,24 +1,14 @@
 package org.thexeler.freeepicgames.handler;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import org.thexeler.freeepicgames.events.NpcEvent;
+import org.thexeler.freeepicgames.event.NpcEvent;
 import org.thexeler.freeepicgames.storage.agent.NpcWorldDataAgent;
 import org.thexeler.freeepicgames.storage.view.NpcView;
 
@@ -57,7 +47,6 @@ public class NpcEventHandler {
         if (entity != null) {
             NeoForge.EVENT_BUS.post(new NpcEvent.Interact(entity, event.getEntity()));
             event.setCanceled(true);
-            event.getEntity().resetAttackStrengthTicker();
         }
     }
 

@@ -3,8 +3,8 @@ package org.thexeler.freeepicgames;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import net.neoforged.neoforge.common.NeoForge;
-import org.thexeler.freeepicgames.events.kubejs.CommonEventsPostJS;
-import org.thexeler.freeepicgames.events.kubejs.FreeEpicGamesEventJS;
+import org.thexeler.freeepicgames.event.kubejs.CommonEventsPostJS;
+import org.thexeler.freeepicgames.event.kubejs.FreeEpicGamesEventJS;
 
 public class FreeEpicGamesJSPlugin implements KubeJSPlugin {
     @Override

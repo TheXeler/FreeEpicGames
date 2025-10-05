@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.events.MenuEvent;
+import org.thexeler.freeepicgames.event.MenuEvent;
 
 import java.util.HashMap;
 import java.util.Map;

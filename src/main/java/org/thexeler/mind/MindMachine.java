@@ -5,9 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.world.entity.Entity;
-import org.thexeler.mind.intention.Intention;
-import org.thexeler.mind.intention.IntentionPriority;
-import org.thexeler.mind.intention.IntentionType;
+import org.thexeler.mind.api.BaseIntention;
+import org.thexeler.mind.api.IntentionPriority;
+import org.thexeler.mind.api.IntentionType;
+import org.thexeler.mind.intention.SimpleIntention;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class MindMachine {
     @Setter
     private int tickCount;
 
-    private final List<Intention> intentions;
+    private final List<BaseIntention> intentions;
 
     public MindMachine(Entity origin) {
         this.origin = origin;
@@ -33,7 +34,7 @@ public class MindMachine {
         this.tickCount = 0;
         this.intentions = Collections.synchronizedList(new LinkedList<>());
 
-        intentions.add(new Intention.SimpleIntention(origin, IntentionType.IDLE, IntentionPriority.LOWEST) {
+        intentions.add(new SimpleIntention(origin, IntentionType.IDLE, IntentionPriority.LOWEST) {
             @Override
             public boolean execute() {
                 return false;
@@ -42,22 +43,22 @@ public class MindMachine {
     }
 
 
-    public void addIntention(Intention intention) {
-        if (intention.getPriority() == IntentionPriority.URGENT) {
-            this.intentions.add(0, intention);
+    public void addIntention(BaseIntention baseIntention) {
+        if (baseIntention.getPriority() == IntentionPriority.URGENT) {
+            this.intentions.add(0, baseIntention);
         } else {
-            ListIterator<Intention> i = this.intentions.listIterator();
+            ListIterator<BaseIntention> i = this.intentions.listIterator();
 
             while (i.hasNext()) {
-                Intention current = i.next();
-                if (!intention.getPriority().biggerThan(current.getPriority())) {
+                BaseIntention current = i.next();
+                if (!baseIntention.getPriority().biggerThan(current.getPriority())) {
                     i.previous();
-                    i.add(intention);
+                    i.add(baseIntention);
                     return;
                 }
             }
 
-            this.intentions.add(intention);
+            this.intentions.add(baseIntention);
         }
     }
 
@@ -71,17 +72,17 @@ public class MindMachine {
 
 
     private void step() {
-        Intention intention = intentions.get(0);
+        BaseIntention baseIntention = intentions.get(0);
 
-        if (intention != null) {
-            if (intention.getType() != IntentionType.IDLE) {
-                if (intention.execute()) {
-                    if (intention.getType() != IntentionType.IDLE) {
+        if (baseIntention != null) {
+            if (baseIntention.getType() != IntentionType.IDLE) {
+                if (baseIntention.execute()) {
+                    if (baseIntention.getType() != IntentionType.IDLE) {
                         intentions.remove(0);
                     }
                 }
                 intentions.forEach(i -> {
-                    if (i != intention) {
+                    if (i != baseIntention) {
                         i.hold();
                     }
                 });

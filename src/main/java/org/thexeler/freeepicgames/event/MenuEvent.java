@@ -1,4 +1,4 @@
-package org.thexeler.freeepicgames.events;
+package org.thexeler.freeepicgames.event;
 
 import lombok.Getter;
 import net.minecraft.world.entity.player.Player;

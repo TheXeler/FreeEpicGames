@@ -21,7 +21,6 @@ import java.util.Random;
 @SuppressWarnings("unused")
 @Command("fegcapture")
 public class ModelCaptureCommand {
-
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("area create <area> <x1> <y1> <z1> <x2> <y2> <z2>")

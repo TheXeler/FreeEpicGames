@@ -21,7 +21,7 @@ public class CommandEventHandler {
         if (FreeEpicGamesConfigs.isEnabledRaid) {
             lamp.register(new ModelRaidCommand());
         }
-        if (FreeEpicGamesConfigs.isEnabledJob) {
+        if (FreeEpicGamesConfigs.isEnabledClasses) {
             lamp.register(new ModelJobCommand());
         }
         if (FreeEpicGamesConfigs.isEnabledCapture) {

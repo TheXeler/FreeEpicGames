@@ -1,14 +1,15 @@
-package org.thexeler.freeepicgames.events.kubejs;
+package org.thexeler.freeepicgames.event.kubejs;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import org.thexeler.freeepicgames.events.NpcEvent;
+import org.thexeler.freeepicgames.event.NpcEvent;
 import org.thexeler.freeepicgames.storage.view.NpcView;
 
 @Getter
@@ -56,6 +57,7 @@ public abstract class NpcEventJS implements KubeEvent {
     @Getter
     public static class Damage extends NpcEventJS {
         private final DamageSource source;
+        @Setter
         private float amount;
         private final DamageContainer container;
 
@@ -89,6 +91,7 @@ public abstract class NpcEventJS implements KubeEvent {
     public static class Attack extends NpcEventJS {
         private final Entity target;
         private final DamageSource source;
+        @Setter
         private float amount;
         private final DamageContainer container;
 

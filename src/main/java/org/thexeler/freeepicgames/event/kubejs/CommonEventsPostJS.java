@@ -1,12 +1,12 @@
-package org.thexeler.freeepicgames.events.kubejs;
+package org.thexeler.freeepicgames.event.kubejs;
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import org.thexeler.freeepicgames.events.MenuEvent;
-import org.thexeler.freeepicgames.events.NpcEvent;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.MenuEvent;
+import org.thexeler.freeepicgames.event.NpcEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.type.NpcType;
 
 public class CommonEventsPostJS {

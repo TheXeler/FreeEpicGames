@@ -23,7 +23,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Command("fegjob")
 public class ModelJobCommand {
-
     @CommandPlaceholder
     @RequiresOP
     @Subcommand("job create <name>")

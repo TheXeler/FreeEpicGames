@@ -1,52 +1,78 @@
 package org.thexeler.freeepicgames;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import org.thexeler.tomls.TomlConfigSpec;
+import org.thexeler.tomls.exception.TomlException;
+import org.thexeler.tomls.value.BooleanValue;
+import org.thexeler.tomls.value.IntegerValue;
 
-@EventBusSubscriber(modid = FreeEpicGames.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+import java.io.IOException;
+
 public class FreeEpicGamesConfigs {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final TomlConfigSpec.Builder BUILDER = new TomlConfigSpec.Builder(FreeEpicGames.MOD_ID);
 
-    private static final ModConfigSpec.BooleanValue ENABLED_CAPTURE = BUILDER.comment("Enabled capture module.").define("EnabledCapture", true);
-    private static final ModConfigSpec.BooleanValue ENABLED_CAPTURE_PERSISTENCE = BUILDER.comment("Persistence capture cache.").define("EnabledCapturePersistence", true);
-    private static final ModConfigSpec.IntValue CAPTURE_TICK = BUILDER.comment("How many ticks is the interval for progress calculation.").defineInRange("CaptureTick", 20, 0, Integer.MAX_VALUE);
+    private static final BooleanValue ENABLED_CAPTURE = BUILDER.comment("Enabled capture module.").define("EnabledCapture", false);
+    private static final BooleanValue ENABLED_CAPTURE_PERSISTENCE = BUILDER.comment("Persistence capture cache.").define("EnabledCapturePersistence", true);
+    private static final IntegerValue CAPTURE_TICK = BUILDER.comment("How many ticks is the interval for progress calculation.").defineInRange("CaptureTick", 20, 0, Integer.MAX_VALUE);
 
-    private static final ModConfigSpec.BooleanValue ENABLED_JOB = BUILDER.comment("Enabled job module.").define("EnabledJob", true);
-    private static final ModConfigSpec.BooleanValue ENABLED_JOB_PERSISTENCE = BUILDER.comment("Persistence job cache.").define("EnabledJobPersistence", true);
+    private static final BooleanValue ENABLED_CLASSES = BUILDER.comment("Enabled classes module.").define("EnabledClasses", false);
+    private static final BooleanValue ENABLED_CLASSES_PERSISTENCE = BUILDER.comment("Persistence classes cache.").define("EnabledClassesPersistence", true);
 
-    private static final ModConfigSpec.BooleanValue ENABLED_RAID = BUILDER.comment("Enabled raid module.").define("EnabledRaid", true);
-    private static final ModConfigSpec.BooleanValue ENABLED_RAID_PERSISTENCE = BUILDER.comment("Persistence raid cache.").define("EnabledRaidPersistence", true);
+    private static final BooleanValue ENABLED_RAID = BUILDER.comment("Enabled raid module.").define("EnabledRaid", false);
+    private static final BooleanValue ENABLED_RAID_PERSISTENCE = BUILDER.comment("Persistence raid cache.").define("EnabledRaidPersistence", true);
 
-    private static final ModConfigSpec.BooleanValue ENABLED_CHEST_MENU_POST_EVENT_BUS = BUILDER.comment("Enabled chest menu post event bus.").define("EnabledChestMenuPostEventBus", false);
+    private static final BooleanValue ENABLED_CHEST_MENU_POST_EVENT_BUS = BUILDER.comment("Enabled chest menu post event bus.").define("EnabledChestMenuPostEventBus", false);
 
-    public static final ModConfigSpec SPEC = BUILDER.build();
+    private static final TomlConfigSpec SPEC = BUILDER.build();
 
     public static boolean isEnabledCapture;
     public static boolean isEnabledCaptureCachePersistence;
     public static int captureTick;
 
-    public static boolean isEnabledJob;
-    public static boolean isEnabledJobCachePersistence;
+    public static boolean isEnabledClasses;
+    public static boolean isEnabledClassesCachePersistence;
 
     public static boolean isEnabledRaid;
     public static boolean isEnabledRaidCachePersistence;
 
     public static boolean isEnabledChestMenuPostEventBus;
 
-    @SubscribeEvent
-    static void onLoad(final ModConfigEvent.Loading event) {
-        isEnabledCapture = ENABLED_CAPTURE.get();
-        isEnabledCaptureCachePersistence = ENABLED_CAPTURE_PERSISTENCE.get();
-        captureTick = CAPTURE_TICK.get();
+    static void load() {
+        try {
+            SPEC.load();
 
-        isEnabledJob = ENABLED_JOB.get();
-        isEnabledJobCachePersistence = ENABLED_JOB_PERSISTENCE.get();
+            isEnabledCapture = ENABLED_CAPTURE.getValue();
+            isEnabledCaptureCachePersistence = ENABLED_CAPTURE_PERSISTENCE.getValue();
+            captureTick = CAPTURE_TICK.getValue();
 
-        isEnabledRaid = ENABLED_RAID.get();
-        isEnabledRaidCachePersistence = ENABLED_RAID_PERSISTENCE.get();
+            isEnabledClasses = ENABLED_CLASSES.getValue();
+            isEnabledClassesCachePersistence = ENABLED_CLASSES_PERSISTENCE.getValue();
 
-        isEnabledChestMenuPostEventBus = ENABLED_CHEST_MENU_POST_EVENT_BUS.get();
+            isEnabledRaid = ENABLED_RAID.getValue();
+            isEnabledRaidCachePersistence = ENABLED_RAID_PERSISTENCE.getValue();
+
+            isEnabledChestMenuPostEventBus = ENABLED_CHEST_MENU_POST_EVENT_BUS.getValue();
+        } catch (TomlException | IOException e) {
+            FreeEpicGames.LOGGER.error(e.getMessage());
+        }
+    }
+
+    static void save() {
+        try {
+            SPEC.save();
+
+            ENABLED_CAPTURE.setValue(isEnabledCapture);
+            ENABLED_CAPTURE_PERSISTENCE.setValue(isEnabledCaptureCachePersistence);
+            CAPTURE_TICK.setValue(captureTick);
+
+            ENABLED_CLASSES.setValue(isEnabledClasses);
+            ENABLED_CLASSES_PERSISTENCE.setValue(isEnabledClassesCachePersistence);
+
+            ENABLED_RAID.setValue(isEnabledRaid);
+            ENABLED_RAID_PERSISTENCE.setValue(isEnabledRaidCachePersistence);
+
+            ENABLED_CHEST_MENU_POST_EVENT_BUS.setValue(isEnabledChestMenuPostEventBus);
+        } catch (TomlException | IOException e) {
+            FreeEpicGames.LOGGER.error(e.getMessage());
+        }
     }
 }

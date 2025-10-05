@@ -1,11 +1,11 @@
-package org.thexeler.freeepicgames.events.kubejs;
+package org.thexeler.freeepicgames.event.kubejs;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
-import org.thexeler.freeepicgames.events.MenuEvent;
+import org.thexeler.freeepicgames.event.MenuEvent;
 import org.thexeler.freeepicgames.utils.chestmenu.EventChestMenu;
 
 @Getter

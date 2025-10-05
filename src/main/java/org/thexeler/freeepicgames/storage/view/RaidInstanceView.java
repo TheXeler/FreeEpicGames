@@ -21,7 +21,7 @@ import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
 import org.thexeler.freeepicgames.storage.type.RaidType;
 import org.thexeler.freeepicgames.storage.utils.DataUtils;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import oshi.util.tuples.Pair;
 
 import java.util.*;

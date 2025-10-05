@@ -21,7 +21,7 @@ public class JobDataAgent extends AbstractDataAgent {
     private final Map<String, String> playerJobMap = Collections.synchronizedMap(new HashMap<>());
 
     private JobDataAgent() {
-        if (FreeEpicGamesConfigs.isEnabledJobCachePersistence) {
+        if (FreeEpicGamesConfigs.isEnabledClassesCachePersistence) {
             playerData = ModSavedData.getGlobalData("JobsCache");
         } else {
             playerData = new JsonObject();
@@ -56,7 +56,7 @@ public class JobDataAgent extends AbstractDataAgent {
 
     @Override
     public void load() {
-        if (FreeEpicGamesConfigs.isEnabledJobCachePersistence) {
+        if (FreeEpicGamesConfigs.isEnabledClassesCachePersistence) {
             playerData.asMap().forEach((key, value) ->
                     playerJobMap.put(key, value.getAsString()));
         }
@@ -64,7 +64,7 @@ public class JobDataAgent extends AbstractDataAgent {
 
     @Override
     public void save() {
-        if (FreeEpicGamesConfigs.isEnabledJobCachePersistence) {
+        if (FreeEpicGamesConfigs.isEnabledClassesCachePersistence) {
             DataUtils.clearDeprecatedKey(playerData, playerJobMap);
             playerJobMap.forEach(playerData::addProperty);
         }
