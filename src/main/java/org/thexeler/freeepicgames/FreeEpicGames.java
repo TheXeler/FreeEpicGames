@@ -101,8 +101,6 @@ public class FreeEpicGames {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onOverWorldUnload(ServerStoppedEvent event) {
-        FreeEpicGamesConfigs.save();
-
         FreeEpicGames.RAID_WORLD = null;
         FreeEpicGames.OVER_WORLD = null;
 

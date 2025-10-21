@@ -51,26 +51,8 @@ public class FreeEpicGamesConfigs {
             isEnabledRaidCachePersistence = ENABLED_RAID_PERSISTENCE.getValue();
 
             isEnabledChestMenuPostEventBus = ENABLED_CHEST_MENU_POST_EVENT_BUS.getValue();
-        } catch (TomlException | IOException e) {
-            FreeEpicGames.LOGGER.error(e.getMessage());
-        }
-    }
 
-    static void save() {
-        try {
             SPEC.save();
-
-            ENABLED_CAPTURE.setValue(isEnabledCapture);
-            ENABLED_CAPTURE_PERSISTENCE.setValue(isEnabledCaptureCachePersistence);
-            CAPTURE_TICK.setValue(captureTick);
-
-            ENABLED_CLASSES.setValue(isEnabledClasses);
-            ENABLED_CLASSES_PERSISTENCE.setValue(isEnabledClassesCachePersistence);
-
-            ENABLED_RAID.setValue(isEnabledRaid);
-            ENABLED_RAID_PERSISTENCE.setValue(isEnabledRaidCachePersistence);
-
-            ENABLED_CHEST_MENU_POST_EVENT_BUS.setValue(isEnabledChestMenuPostEventBus);
         } catch (TomlException | IOException e) {
             FreeEpicGames.LOGGER.error(e.getMessage());
         }

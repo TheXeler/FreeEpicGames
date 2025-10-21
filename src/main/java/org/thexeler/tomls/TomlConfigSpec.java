@@ -10,8 +10,11 @@ import org.thexeler.tomls.value.ConfigValue;
 import org.thexeler.tomls.value.IntegerValue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,6 +22,7 @@ import java.util.stream.Stream;
 
 public class TomlConfigSpec {
     private File configFile;
+    private FileOutputStream configFileOutputStream;
     private final Map<String, ConfigValue<?>> rootValues;
     private final Map<String, Map<String, ConfigValue<?>>> zoneValues;
 
@@ -37,18 +41,19 @@ public class TomlConfigSpec {
                 stream.forEach(line -> {
                     line = line.trim();
 
-                    if (line.isEmpty() || (line.indexOf(0) == '#')) {
-                    } else if (line.startsWith("[") && line.endsWith("]")) {
-                        currentZone.set(zoneValues.computeIfAbsent(line.substring(1, line.length() - 1), k -> new HashMap<>()));
-                    } else if (line.contains("=")) {
-                        String[] parts = line.split("=", 2);
-                        if (currentZone.get().containsKey(parts[0])) {
-                            currentZone.get().get(parts[0]).parse(line);
+                    if (!(line.isEmpty() || (line.indexOf(0) == '#'))) {
+                        if (line.startsWith("[") && line.endsWith("]")) {
+                            currentZone.set(zoneValues.computeIfAbsent(line.substring(1, line.length() - 1), k -> new HashMap<>()));
+                        } else if (line.contains("=")) {
+                            String[] parts = line.split("=", 2);
+                            if (currentZone.get().containsKey(parts[0])) {
+                                currentZone.get().get(parts[0]).parse(line);
+                            } else {
+                                throw new UnparseableException("Error config data line by : " + line);
+                            }
                         } else {
                             throw new UnparseableException("Error config data line by : " + line);
                         }
-                    } else {
-                        throw new UnparseableException("Error config data line by : " + line);
                     }
                 });
             }
@@ -60,41 +65,29 @@ public class TomlConfigSpec {
     public void save() throws TomlException, IOException {
         rootValues.forEach((key, value) -> {
             if (value.getComment() != null && !value.getComment().isEmpty()) {
-                try {
-                    Files.writeString(this.configFile.toPath(), value.getComment());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                writeToFile(value.getComment());
             }
-            try {
-                Files.writeString(this.configFile.toPath(), key + " = " + value.compile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            writeToFile(key + " = " + value.compile());
         });
 
         zoneValues.forEach((zone, values) -> {
-            try {
-                Files.writeString(this.configFile.toPath(), "\n[" + zone + "]");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            writeToFile("[" + zone + "]");
             values.forEach((key, value) -> {
                 if (value.getComment() != null && !value.getComment().isEmpty()) {
-                    try {
-                        Files.writeString(this.configFile.toPath(), value.getComment());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    writeToFile(value.getComment());
                 }
-                try {
-                    Files.writeString(this.configFile.toPath(), key + " = " + value.compile());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                writeToFile(key + " = " + value.compile());
             });
 
         });
+    }
+
+    private void writeToFile(String string) {
+        try {
+            Files.writeString(configFile.toPath(), string + "\n", StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class Builder {
@@ -104,6 +97,11 @@ public class TomlConfigSpec {
             spec = new TomlConfigSpec();
 
             spec.configFile = FMLPaths.GAMEDIR.get().resolve("config").resolve(modId + ".toml").toFile();
+            try {
+                spec.configFileOutputStream = new FileOutputStream(spec.configFile);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         public Builder(File configFile) {
