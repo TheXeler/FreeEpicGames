@@ -10,7 +10,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.events.MenuEvent;
+import org.thexeler.freeepicgames.event.MenuEvent;
 import org.thexeler.slacker.SlackerForge;
 
 import java.util.HashMap;

@@ -26,7 +26,6 @@ public class NpcView implements AbstractView {
     private final HashMap<String, String> npcData;
     @Getter
     private final MindMachine mind;
-    // TODO : saved
 
     public NpcView(@NotNull Entity originEntity, NpcType type, NpcWorldDataAgent agent) {
         this.rootAgent = agent;
@@ -93,6 +92,8 @@ public class NpcView implements AbstractView {
         JsonObject npcDataJson = new JsonObject();
         npcData.forEach(npcDataJson::addProperty);
         jsonObject.add("npc_data", npcDataJson);
+
+        // TODO : SAVE MIND_MACHINE
 
         return jsonObject;
     }

@@ -4,15 +4,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.TickEvent;
 import org.thexeler.freeepicgames.FreeEpicGames;
 import org.thexeler.freeepicgames.FreeEpicGamesKeys;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.NpcEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
 import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
@@ -84,7 +84,7 @@ public class RaidEventHandler {
     public void onRaidTick(TickEvent.ServerTickEvent event) {
         RaidDataAgent agent = RaidDataAgent.getInstance();
         agent.getAllRaidInstance().forEach(view -> {
-            MinecraftForge.EVENT_BUS.post(new RaidEvent.TickEvent(view));
+            SlackerForge.EVENT_BUS.post(new RaidEvent.TickEvent(view));
         });
     }
 }

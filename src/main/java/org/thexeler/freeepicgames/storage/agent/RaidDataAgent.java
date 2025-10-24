@@ -4,14 +4,14 @@ import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGamesConfigs;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.type.RaidType;
 import org.thexeler.freeepicgames.storage.utils.DataUtils;
 import org.thexeler.freeepicgames.storage.utils.ModSavedData;
 import org.thexeler.freeepicgames.storage.view.RaidInstanceView;
+import org.thexeler.slacker.SlackerForge;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -51,7 +51,7 @@ public class RaidDataAgent extends AbstractDataAgent {
             raidInstanceView = new RaidInstanceView(uuid, type, locateEmptyChunk(type));
 
             raidInstanceView.build();
-            MinecraftForge.EVENT_BUS.post(new RaidEvent.BuildEvent(raidInstanceView));
+            SlackerForge.EVENT_BUS.post(new RaidEvent.BuildEvent(raidInstanceView));
 
             raidInstances.put(uuid, raidInstanceView);
         }

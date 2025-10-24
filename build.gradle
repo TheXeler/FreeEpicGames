@@ -93,6 +93,18 @@ repositories {
         name = "Code MC"
         url = "https://repo.codemc.io/repository/maven-public/"
     }
+    maven {
+        name = "Latvian"
+        url = "https://maven.latvian.dev/releases"
+    }
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = "Architectury"
+        url = "https://maven.architectury.dev/"
+    }
 }
 
 configurations {
@@ -104,12 +116,16 @@ configurations {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    implementation "com.mojang:brigadier:1.0.18"
     shade 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
     shade 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
 
     implementation 'io.github.revxrsal:lamp.common:4.0.0-rc.11'
     implementation 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.11'
 
+    implementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
+
+    implementation "org.javassist:javassist:3.30.2-GA"
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 

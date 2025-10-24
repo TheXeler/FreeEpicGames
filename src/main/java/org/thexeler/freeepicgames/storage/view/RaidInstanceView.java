@@ -14,14 +14,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 import org.thexeler.freeepicgames.FreeEpicGames;
-import org.thexeler.freeepicgames.events.RaidEvent;
+import org.thexeler.freeepicgames.event.RaidEvent;
 import org.thexeler.freeepicgames.storage.agent.RaidDataAgent;
 import org.thexeler.freeepicgames.storage.type.RaidTreasureType;
 import org.thexeler.freeepicgames.storage.type.RaidType;
 import org.thexeler.freeepicgames.storage.utils.DataUtils;
+import org.thexeler.slacker.SlackerForge;
 import oshi.util.tuples.Pair;
 
 import java.util.*;
@@ -235,7 +235,7 @@ public class RaidInstanceView implements AbstractCacheView {
 
     public void destroy() {
         if (isActive) {
-            if (!MinecraftForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this))) {
+            if (!SlackerForge.EVENT_BUS.post(new RaidEvent.DestroyEvent(this)).isCanceled()) {
                 isActive = false;
                 RaidDataAgent.getInstance().removeRaidInstance(this);
 

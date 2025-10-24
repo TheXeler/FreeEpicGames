@@ -1,7 +1,6 @@
-package org.thexeler.freeepicgames.events;
+package org.thexeler.freeepicgames.event;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraftforge.eventbus.api.Event;
@@ -16,15 +15,10 @@ public abstract class MenuEvent extends Event {
     @Getter
     protected final EventChestMenu menu;
 
-    @Getter
-    @Setter
-    protected boolean keepVanillaLogic;
-
     public MenuEvent(Player player, int index, EventChestMenu menu) {
         this.player = player;
         this.index = index;
         this.menu = menu;
-        this.keepVanillaLogic = false;
     }
 
     public static class CreateEvent extends MenuEvent {
